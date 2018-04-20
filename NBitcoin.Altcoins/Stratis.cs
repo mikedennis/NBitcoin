@@ -1,11 +1,11 @@
-﻿using NBitcoin.DataEncoders;
-using NBitcoin.Protocol;
-using NBitcoin.RPC;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
+using NBitcoin.DataEncoders;
+using NBitcoin.Protocol;
+using NBitcoin.RPC;
 
 namespace NBitcoin.Altcoins
 {
@@ -102,6 +102,12 @@ namespace NBitcoin.Altcoins
 			public override ConsensusFactory GetConsensusFactory()
 			{
 				return Stratis.Mainnet.Consensus.ConsensusFactory;
+			}
+
+			public override void ReadWrite(BitcoinStream stream)
+			{
+				base.ReadWrite(stream);
+				stream.ReadWrite(ref this.blockSignature);
 			}
 
 			public static bool BlockSignature = false;
