@@ -1,4 +1,5 @@
-﻿using NBitcoin.Protocol;
+﻿using NBitcoin.DataEncoders;
+using NBitcoin.Protocol;
 using NBitcoin.RPC;
 using System;
 using System.Collections.Generic;
@@ -9,12 +10,130 @@ using System.Net;
 namespace NBitcoin.Altcoins
 {
 	public class Stratis
-	{	
+	{
+		public class StratisBlockSignature : IBitcoinSerializable
+		{
+			protected bool Equals(StratisBlockSignature other)
+			{
+				return Equals(signature, other.signature);
+			}
+
+			public override bool Equals(object obj)
+			{
+				if (ReferenceEquals(null, obj)) return false;
+				if (ReferenceEquals(this, obj)) return true;
+				if (obj.GetType() != this.GetType()) return false;
+				return Equals((StratisBlockSignature)obj);
+			}
+
+			public override int GetHashCode()
+			{
+				return (signature?.GetHashCode() ?? 0);
+			}
+
+			public StratisBlockSignature()
+			{
+				this.signature = new byte[0];
+			}
+
+			private byte[] signature;
+
+			public byte[] Signature
+			{
+				get
+				{
+					return signature;
+				}
+				set
+				{
+					signature = value;
+				}
+			}
+
+			internal void SetNull()
+			{
+				signature = new byte[0];
+			}
+
+			public bool IsEmpty()
+			{
+				return !this.signature.Any();
+			}
+
+			public static bool operator ==(StratisBlockSignature a, StratisBlockSignature b)
+			{
+				if (System.Object.ReferenceEquals(a, b))
+					return true;
+
+				if (((object)a == null) || ((object)b == null))
+					return false;
+
+				return a.signature.SequenceEqual(b.signature);
+			}
+
+			public static bool operator !=(StratisBlockSignature a, StratisBlockSignature b)
+			{
+				return !(a == b);
+			}
+
+			#region IBitcoinSerializable Members
+
+			public void ReadWrite(BitcoinStream stream)
+			{
+				stream.ReadWriteAsVarString(ref signature);
+			}
+
+			#endregion
+
+			public override string ToString()
+			{
+				return Encoders.Hex.EncodeData(this.signature);
+			}
+		}
+
+		public class StratisBlock : Block
+		{
+#pragma warning disable CS0618 // Type or member is obsolete
+			public StratisBlock(BlockHeader h) : base(h)
+#pragma warning restore CS0618 // Type or member is obsolete
+			{
+
+			}
+			public override ConsensusFactory GetConsensusFactory()
+			{
+				return Stratis.Mainnet.Consensus.ConsensusFactory;
+			}
+
+			public static bool BlockSignature = false;
+
+			// block signature - signed by one of the coin base txout[N]'s owner
+			private StratisBlockSignature blockSignature = new StratisBlockSignature();
+
+			public StratisBlockSignature BlockSignatur
+			{
+				get { return this.blockSignature; }
+				set { this.blockSignature = value; }
+			}
+		}
+
 		public class StratisConsensusFactory : ConsensusFactory
 		{
 			public StratisConsensusFactory()
 			{
-			}	
+			}
+
+			public override BlockHeader CreateBlockHeader()
+			{
+#pragma warning disable CS0618 // Type or member is obsolete
+				return new BlockHeader();
+#pragma warning restore CS0618 // Type or member is obsolete
+			}
+			public override Block CreateBlock()
+			{
+#pragma warning disable CS0618 // Type or member is obsolete
+				return new StratisBlock(new BlockHeader());
+#pragma warning restore CS0618 // Type or member is obsolete
+			}
 		}
 
 		public static void EnsureRegistered()
