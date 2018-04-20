@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Runtime.CompilerServices;
 
 namespace NBitcoin.Tests
 {
@@ -24,6 +19,10 @@ namespace NBitcoin.Tests
 
 			//Altcoins.Dash.EnsureRegistered();
 			//var builder = NodeBuilder.Create(NodeDownloadData.Dash.v0_12_2, Altcoins.Dash.Regtest, caller);
+			//return builder;
+
+			//Altcoins.Stratis.EnsureRegistered();
+			//var builder = NodeBuilder.Create(NodeDownloadData.Stratis.v1_0_2_alpha, Altcoins.Stratis.Regtest, caller);
 			//return builder;
 
 			return NodeBuilder.Create(NodeDownloadData.Bitcoin.v0_16_0, Network.RegTest, caller);

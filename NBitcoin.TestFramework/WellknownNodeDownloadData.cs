@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace NBitcoin.Tests
+﻿namespace NBitcoin.Tests
 {
 	public partial class NodeDownloadData
 	{
@@ -231,6 +227,35 @@ namespace NBitcoin.Tests
 			};
 		}
 
+		public class StratisNodeDownloadData
+		{
+			public NodeDownloadData v1_0_2_alpha = new NodeDownloadData()
+			{				
+				Version = "1.0.2-alpha",
+				Windows = new NodeOSDownloadData()
+				{
+					DownloadLink = "https://github.com/mikedennis/StratisBitcoinFullNode/releases/download/{0}/win-x64.zip",
+					Archive = "win-x64.zip",
+					Executable = "win-x64/Stratis.StratisD.exe",
+					Hash = "C1EE3CA7328466F662355130A54DAF49F1E075FF5019183AA0CE277F87EF1E3D"
+				},
+				Linux = new NodeOSDownloadData()
+				{
+					DownloadLink = "https://github.com/mikedennis/StratisBitcoinFullNode/releases/download/{0}/linux-x64.zip",
+					Archive = "linux-x64.zip",
+					Executable = "linux-x64/Stratis.StratisD.StratisD",
+					Hash = "C777B4E9C3FD74FBC1CFDDC73AA45FC4A2AE09155533D15D6CBF73E12390DCA1"
+				},
+				Mac = new NodeOSDownloadData()
+				{
+					DownloadLink = "https://github.com/mikedennis/StratisBitcoinFullNode/releases/download/{0}/osx-x64.zip",
+					Archive = "osx-x64.zip",
+					Executable = "osx-x64/Stratis.StratisD.StratisD",
+					Hash = "11C7C02E366B3243BD711C63226BB90A10173B12AB54BA09567E6E495CA8E5E3"
+				},
+			};
+		}
+
 		public static BitcoinNodeDownloadData Bitcoin
 		{
 			get; set;
@@ -260,5 +285,10 @@ namespace NBitcoin.Tests
 		{
 			get; set;
 		} = new DashNodeDownloadData();
+
+		public static StratisNodeDownloadData Stratis
+		{
+			get; set;
+		} = new StratisNodeDownloadData();
 	}
 }
