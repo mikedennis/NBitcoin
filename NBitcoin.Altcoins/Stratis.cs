@@ -1,11 +1,9 @@
-﻿using System;
+﻿using NBitcoin.DataEncoders;
+using NBitcoin.Protocol;
+using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Net;
-using NBitcoin.DataEncoders;
-using NBitcoin.Protocol;
-using NBitcoin.RPC;
 
 namespace NBitcoin.Altcoins
 {
@@ -293,32 +291,32 @@ namespace NBitcoin.Altcoins
 			if (string.IsNullOrEmpty(home) && string.IsNullOrEmpty(localAppData))
 				return new object();
 
-			if (!string.IsNullOrEmpty(home))
-			{
-				var bitcoinFolder = Path.Combine(home, ".stratis");
+			//if (!string.IsNullOrEmpty(home))
+			//{
+			//	var bitcoinFolder = Path.Combine(home, ".stratis");
 
-				var mainnet = Path.Combine(bitcoinFolder, ".cookie");
-				RPCClient.RegisterDefaultCookiePath(Stratis._Mainnet, mainnet);
+			//	var mainnet = Path.Combine(bitcoinFolder, ".cookie");
+			//	RPCClient.RegisterDefaultCookiePath(Stratis._Mainnet, mainnet);
 
-				var testnet = Path.Combine(bitcoinFolder, "testnet4", ".cookie");
-				RPCClient.RegisterDefaultCookiePath(Stratis._Testnet, testnet);
+			//	var testnet = Path.Combine(bitcoinFolder, "testnet4", ".cookie");
+			//	RPCClient.RegisterDefaultCookiePath(Stratis._Testnet, testnet);
 
-				var regtest = Path.Combine(bitcoinFolder, "regtest", ".cookie");
-				RPCClient.RegisterDefaultCookiePath(Stratis._Regtest, regtest);
-			}
-			else if (!string.IsNullOrEmpty(localAppData))
-			{
-				var bitcoinFolder = Path.Combine(localAppData, "Stratis");
+			//	var regtest = Path.Combine(bitcoinFolder, "regtest", ".cookie");
+			//	RPCClient.RegisterDefaultCookiePath(Stratis._Regtest, regtest);
+			//}
+			//else if (!string.IsNullOrEmpty(localAppData))
+			//{
+			//	var bitcoinFolder = Path.Combine(localAppData, "Stratis");
 
-				var mainnet = Path.Combine(bitcoinFolder, ".cookie");
-				RPCClient.RegisterDefaultCookiePath(Stratis._Mainnet, mainnet);
+			//	var mainnet = Path.Combine(bitcoinFolder, ".cookie");
+			//	RPCClient.RegisterDefaultCookiePath(Stratis._Mainnet, mainnet);
 
-				var testnet = Path.Combine(bitcoinFolder, "testnet4", ".cookie");
-				RPCClient.RegisterDefaultCookiePath(Stratis._Testnet, testnet);
+			//	var testnet = Path.Combine(bitcoinFolder, "testnet4", ".cookie");
+			//	RPCClient.RegisterDefaultCookiePath(Stratis._Testnet, testnet);
 
-				var regtest = Path.Combine(bitcoinFolder, "regtest", ".cookie");
-				RPCClient.RegisterDefaultCookiePath(Stratis._Regtest, regtest);
-			}
+			//	var regtest = Path.Combine(bitcoinFolder, "regtest", ".cookie");
+			//	RPCClient.RegisterDefaultCookiePath(Stratis._Regtest, regtest);
+			//}
 			return new object();
 		}
 

@@ -452,7 +452,7 @@ namespace NBitcoin
 		}
 
 
-		public void ReadWrite(BitcoinStream stream)
+		public virtual void ReadWrite(BitcoinStream stream)
 		{
 			stream.ReadWrite(ref header);
 			stream.ReadWrite(ref vtx);

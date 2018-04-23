@@ -21,11 +21,12 @@ namespace NBitcoin.Tests
 			//var builder = NodeBuilder.Create(NodeDownloadData.Dash.v0_12_2, Altcoins.Dash.Regtest, caller);
 			//return builder;
 
-			//Altcoins.Stratis.EnsureRegistered();
-			//var builder = NodeBuilder.Create(NodeDownloadData.Stratis.v1_0_2_alpha, Altcoins.Stratis.Regtest, caller);
-			//return builder;
+			Altcoins.Stratis.EnsureRegistered();
+			var builder = NodeBuilder.Create(NodeDownloadData.Stratis.v1_0_2_alpha, Altcoins.Stratis.Regtest, caller);
+			builder.SupportCookieFile = false;
+			return builder;
 
-			return NodeBuilder.Create(NodeDownloadData.Bitcoin.v0_16_0, Network.RegTest, caller);
+			//return NodeBuilder.Create(NodeDownloadData.Bitcoin.v0_16_0, Network.RegTest, caller);
 		}
 	}
 }

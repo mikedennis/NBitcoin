@@ -234,24 +234,24 @@
 				Version = "1.0.2-alpha",
 				Windows = new NodeOSDownloadData()
 				{
-					DownloadLink = "https://github.com/mikedennis/StratisBitcoinFullNode/releases/download/{0}/win-x64.zip",
-					Archive = "win-x64.zip",
-					Executable = "win-x64/Stratis.StratisD.exe",
-					Hash = "C1EE3CA7328466F662355130A54DAF49F1E075FF5019183AA0CE277F87EF1E3D"
+					DownloadLink = "https://github.com/mikedennis/StratisBitcoinFullNode/releases/download/V{0}/stratis-win-x64.zip",
+					Archive = "stratis-win-x64.zip",
+					Executable = "stratis-win-x64/Stratis.StratisD.exe",
+					Hash = "42cbf1c09bfe01de940dd6927cdd26b6285e138e9a725da73a41c3ebcdee3c19"
 				},
 				Linux = new NodeOSDownloadData()
 				{
-					DownloadLink = "https://github.com/mikedennis/StratisBitcoinFullNode/releases/download/{0}/linux-x64.zip",
+					DownloadLink = "https://github.com/mikedennis/StratisBitcoinFullNode/releases/download/V{0}/linux-x64.zip",
 					Archive = "linux-x64.zip",
 					Executable = "linux-x64/Stratis.StratisD.StratisD",
-					Hash = "C777B4E9C3FD74FBC1CFDDC73AA45FC4A2AE09155533D15D6CBF73E12390DCA1"
+					Hash = "E0327BA91BE59CFD24E76BF4CF09C37A1EBD95168A43C6ECDC26A1559CE908C0"
 				},
 				Mac = new NodeOSDownloadData()
 				{
-					DownloadLink = "https://github.com/mikedennis/StratisBitcoinFullNode/releases/download/{0}/osx-x64.zip",
+					DownloadLink = "https://github.com/mikedennis/StratisBitcoinFullNode/releases/download/V{0}/osx-x64.zip",
 					Archive = "osx-x64.zip",
 					Executable = "osx-x64/Stratis.StratisD.StratisD",
-					Hash = "11C7C02E366B3243BD711C63226BB90A10173B12AB54BA09567E6E495CA8E5E3"
+					Hash = "B79AAEB1828100DD081AD59268FFF1F9183B109661072EC149F00803744F474B"
 				},
 			};
 		}

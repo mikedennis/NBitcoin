@@ -1212,6 +1212,13 @@ namespace NBitcoin
 			if(!stream.Serializing)
 			{
 				stream.ReadWrite(ref nVersion);
+
+// ------ TESTING -----
+				// the POS time stamp
+				uint nTime = 0;
+				stream.ReadWrite(ref nTime);
+// ------ TESTING -----
+
 				/* Try to read the vin. In case the dummy is there, this will be read as an empty vector. */
 				stream.ReadWrite<TxInList, TxIn>(ref vin);
 
