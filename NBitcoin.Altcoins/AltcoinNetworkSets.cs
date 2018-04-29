@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace NBitcoin.Altcoins
 {
-    public class AltNetworkSets
+	public class AltNetworkSets
     {
 		public static BCash BCash { get; } = BCash.Instance;
 		public static BGold BGold { get; } = BGold.Instance;
@@ -16,6 +12,7 @@ namespace NBitcoin.Altcoins
 		public static Viacoin Viacoin {get; } = Viacoin.Instance;
 		public static Polis Polis { get; } = Polis.Instance;
 		public static Bitcoin Bitcoin { get; } = Bitcoin.Instance;
+		public static Stratis Stratis { get; } = Stratis.Instance;
 
 		public static IEnumerable<INetworkSet> GetAll()
 		{
@@ -27,6 +24,7 @@ namespace NBitcoin.Altcoins
 			yield return BGold;
 			yield return Polis;
 			yield return Dash;
+			yield return Stratis;
 		}
 	}
 }
