@@ -1083,7 +1083,8 @@ namespace NBitcoin
 		Witness = 0x40000000,
 		All = Witness
 	}
-	class Witness
+
+	public class Witness
 	{
 		TxInList _Inputs;
 		public Witness(TxInList inputs)
@@ -1096,7 +1097,7 @@ namespace NBitcoin
 			return _Inputs.All(i => i.WitScript.PushCount == 0);
 		}
 
-		internal void ReadWrite(BitcoinStream stream)
+		public void ReadWrite(BitcoinStream stream)
 		{
 			for(int i = 0; i < _Inputs.Count; i++)
 			{
@@ -1199,7 +1200,7 @@ namespace NBitcoin
 		}
 
 		//Since it is impossible to serialize a transaction with 0 input without problems during deserialization with wit activated, we fit a flag in the version to workaround it
-		const uint NoDummyInput = (1 << 27);
+		protected const uint NoDummyInput = (1 << 27);
 
 		#region IBitcoinSerializable Members
 
