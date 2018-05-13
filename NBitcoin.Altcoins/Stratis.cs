@@ -1,6 +1,6 @@
 ﻿using NBitcoin.DataEncoders;
+using Newtonsoft.Json.Linq;
 using System;
-using System.IO;
 using System.Linq;
 
 namespace NBitcoin.Altcoins
@@ -232,7 +232,7 @@ namespace NBitcoin.Altcoins
 					/* Unknown flag in the serialization */
 					throw new FormatException("Unknown transaction optional data");
 				}
-				LockTime lockTimeTemp = new LockTime();
+				LockTime lockTimeTemp = LockTime.Zero;
 				stream.ReadWriteStruct(ref lockTimeTemp);
 
 				this.Version = nVersionTemp;
@@ -267,10 +267,10 @@ namespace NBitcoin.Altcoins
 					stream.ReadWrite<TxInList, TxIn>(ref vinDummy);
 					stream.ReadWrite(ref flags);
 				}
-				TxInList vin = this.Inputs;
-				TxOutList vout = this.Outputs;
+				TxInList vin = this.Inputs;				
 				stream.ReadWrite<TxInList, TxIn>(ref vin);
 				vin.Transaction = this;
+				TxOutList vout = this.Outputs;
 				stream.ReadWrite<TxOutList, TxOut>(ref vout);
 				vout.Transaction = this;
 				if ((flags & 1) != 0)
@@ -280,6 +280,61 @@ namespace NBitcoin.Altcoins
 				}
 				LockTime lockTime = this.LockTime;
 				stream.ReadWriteStruct(ref lockTime);
+			}
+
+			public static StratisTransaction ParseJson(string tx)
+			{
+				JObject obj = JObject.Parse(tx);
+				StratisTransaction stratTx = new StratisTransaction(Stratis.StratisConsensusFactory.Instance);
+				DeserializeFromJson(obj, ref stratTx);
+
+				return stratTx;
+			}
+
+			private static void DeserializeFromJson(JObject json, ref StratisTransaction tx)
+			{
+				tx.Version = (uint)json.GetValue("version");
+				tx.Time = (uint)json.GetValue("time");
+				tx.LockTime = (uint)json.GetValue("locktime");
+
+				var vin = (JArray)json.GetValue("vin");
+				for (int i = 0; i < vin.Count; i++)
+				{
+					var jsonIn = (JObject)vin[i];
+					var txin = new TxIn();
+					tx.Inputs.Add(txin);
+
+					var script = (JObject)jsonIn.GetValue("scriptSig");
+					if (script != null)
+					{
+						txin.ScriptSig = new Script(Encoders.Hex.DecodeData((string)script.GetValue("hex")));
+						txin.PrevOut.Hash = uint256.Parse((string)jsonIn.GetValue("txid"));
+						txin.PrevOut.N = (uint)jsonIn.GetValue("vout");
+					}
+					else
+					{
+						var coinbase = (string)jsonIn.GetValue("coinbase");
+						txin.ScriptSig = new Script(Encoders.Hex.DecodeData(coinbase));
+					}
+
+					txin.Sequence = (uint)jsonIn.GetValue("sequence");
+
+				}
+
+				var vout = (JArray)json.GetValue("vout");
+				for (int i = 0; i < vout.Count; i++)
+				{
+					var jsonOut = (JObject)vout[i];
+					var txout = new TxOut();
+					tx.Outputs.Add(txout);
+
+					var btc = (decimal)jsonOut.GetValue("value");
+					var satoshis = btc * Money.COIN;
+					txout.Value = new Money((long)(satoshis));
+
+					var script = (JObject)jsonOut.GetValue("scriptPubKey");
+					txout.ScriptPubKey = new Script(Encoders.Hex.DecodeData((string)script.GetValue("hex")));
+				}
 			}
 		}
 

@@ -26,7 +26,7 @@ namespace NBitcoin.Tests
 
 			//var builder = NodeBuilder.Create(NodeDownloadData.Polis.v1_3_0, Altcoins.Polis.Instance.Regtest, caller);
 
-			var builder = NodeBuilder.Create(NodeDownloadData.Stratis.v1_0_2_alpha, Altcoins.Stratis.Instance.Regtest, caller);
+			var builder = NodeBuilder.Create(NodeDownloadData.Stratis.v2_0_0_3, Altcoins.Stratis.Instance.Regtest, caller);
 			builder.SupportCookieFile = false;
 
 			//var builder = NodeBuilder.Create(NodeDownloadData.Bitcoin.v0_16_0, Altcoins.AltNetworkSets.Bitcoin.Regtest, caller);

@@ -314,31 +314,35 @@
 			};
 		}
 
+		/// <summary>
+		/// Currently this is using the c++ stratisx full node. Only the linux version is available at this time.
+		/// Should eventually be changed to use C# full node once RPC interfaces are more mature.
+		/// </summary>
 		public class StratisNodeDownloadData
 		{
-			public NodeDownloadData v1_0_2_alpha = new NodeDownloadData()
+			public NodeDownloadData v2_0_0_3 = new NodeDownloadData()
 			{
-				Version = "1.0.2-alpha",
+				Version = "2.0.0.3",
 				Windows = new NodeOSDownloadData()
 				{
-					DownloadLink = "https://github.com/mikedennis/StratisBitcoinFullNode/releases/download/V{0}/stratis-win-x64.zip",
+					DownloadLink = "https://github.com/mikedennis/stratisX/releases/download/v{0}/win-x64.zip",
 					Archive = "stratis-win-x64.zip",
-					Executable = "stratis-win-x64/Stratis.StratisD.exe",
-					Hash = "42cbf1c09bfe01de940dd6927cdd26b6285e138e9a725da73a41c3ebcdee3c19"
+					Executable = "stratis-win-x64/stratisd.exe",
+					Hash = "ffff"
 				},
 				Linux = new NodeOSDownloadData()
 				{
-					DownloadLink = "https://github.com/mikedennis/StratisBitcoinFullNode/releases/download/V{0}/linux-x64.zip",
+					DownloadLink = "https://github.com/mikedennis/stratisX/releases/download/v{0}/linux-x64.zip",
 					Archive = "linux-x64.zip",
-					Executable = "linux-x64/Stratis.StratisD.StratisD",
-					Hash = "E0327BA91BE59CFD24E76BF4CF09C37A1EBD95168A43C6ECDC26A1559CE908C0"
+					Executable = "linux-x64/stratisd",
+					Hash = "3c42468395ef42e2186e41d0a14140024d4fa864aee42e5c6d502abcbb293478"
 				},
 				Mac = new NodeOSDownloadData()
 				{
-					DownloadLink = "https://github.com/mikedennis/StratisBitcoinFullNode/releases/download/V{0}/osx-x64.zip",
+					DownloadLink = "https://github.com/mikedennis/stratisX/releases/download/v{0}/osx-x64.zip",
 					Archive = "osx-x64.zip",
-					Executable = "osx-x64/Stratis.StratisD.StratisD",
-					Hash = "B79AAEB1828100DD081AD59268FFF1F9183B109661072EC149F00803744F474B"
+					Executable = "osx-x64/stratisd",
+					Hash = "ffff"
 				},
 			};
 		}
