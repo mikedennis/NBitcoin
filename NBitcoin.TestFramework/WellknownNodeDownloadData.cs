@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace NBitcoin.Tests
+﻿namespace NBitcoin.Tests
 {
 	public partial class NodeDownloadData
 	{
@@ -318,6 +314,39 @@ namespace NBitcoin.Tests
 			};
 		}
 
+		/// <summary>
+		/// Currently this is using the c++ stratisx full node. Only the linux version is available at this time.
+		/// Should eventually be changed to use C# full node once RPC interfaces are more mature.
+		/// </summary>
+		public class StratisNodeDownloadData
+		{
+			public NodeDownloadData v2_0_0_3 = new NodeDownloadData()
+			{
+				Version = "2.0.0.3",
+				Windows = new NodeOSDownloadData()
+				{
+					DownloadLink = "https://github.com/mikedennis/stratisX/releases/download/v{0}/win-x64.zip",
+					Archive = "stratis-win-x64.zip",
+					Executable = "stratis-win-x64/stratisd.exe",
+					Hash = "ffff"
+				},
+				Linux = new NodeOSDownloadData()
+				{
+					DownloadLink = "https://github.com/mikedennis/stratisX/releases/download/v{0}/linux-x64.tar.gz",
+					Archive = "linux-x64.tar.gz",
+					Executable = "linux-x64/stratisd",
+					Hash = "187081c59cc572b71d61f262e403535e5722b001a1d3375747f9a072706fbd22"
+				},
+				Mac = new NodeOSDownloadData()
+				{
+					DownloadLink = "https://github.com/mikedennis/stratisX/releases/download/v{0}/osx-x64.zip",
+					Archive = "osx-x64.zip",
+					Executable = "osx-x64/stratisd",
+					Hash = "ffff"
+				},
+			};
+		}
+
 		public static BitcoinNodeDownloadData Bitcoin
 		{
 			get; set;
@@ -363,5 +392,9 @@ namespace NBitcoin.Tests
 			get; set;
 		} = new PolisNodeDownloadData();
 
+		public static StratisNodeDownloadData Stratis
+		{
+			get; set;
+		} = new StratisNodeDownloadData();
 	}
 }
