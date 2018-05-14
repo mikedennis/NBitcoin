@@ -32,9 +32,9 @@ namespace NBitcoin
 	}
 	public abstract class NetworkSetBase : INetworkSet
 	{
+		object l = new object();
 		public NetworkSetBase()
 		{
-			_LazyRegistered = new Lazy<object>(RegisterLazy, false);
 		}
 		public Network GetNetwork(NetworkType networkType)
 		{
@@ -50,31 +50,35 @@ namespace NBitcoin
 			throw new NotSupportedException(networkType.ToString());
 		}
 
+		volatile bool _Registered;
+		volatile bool _Registering;
 		public void EnsureRegistered()
 		{
-			if(_LazyRegistered.IsValueCreated)
+			if(_Registered)
 				return;
-			// This will cause RegisterLazy to evaluate
-			new Lazy<object>[] { _LazyRegistered }.Select(o => o.Value != null).ToList();
-		}
-		Lazy<object> _LazyRegistered;
-
-		object RegisterLazy()
-		{
-			var builder = CreateMainnet();
-			builder.SetNetworkType(NetworkType.Mainnet);
-			builder.SetNetworkSet(this);
-			_Mainnet = builder.BuildAndRegister();
-			builder = CreateTestnet();
-			builder.SetNetworkType(NetworkType.Testnet);
-			builder.SetNetworkSet(this);
-			_Testnet = builder.BuildAndRegister();
-			builder = CreateRegtest();
-			builder.SetNetworkType(NetworkType.Regtest);
-			builder.SetNetworkSet(this);
-			_Regtest = builder.BuildAndRegister();
-			PostInit();
-			return null;
+			lock(l)
+			{
+				if(_Registered)
+					return;
+				if(_Registering)
+					throw new InvalidOperationException("It seems like you are recursively accessing a Network which is not yet built.");
+				_Registering = true;
+				var builder = CreateMainnet();
+				builder.SetNetworkType(NetworkType.Mainnet);
+				builder.SetNetworkSet(this);
+				_Mainnet = builder.BuildAndRegister();
+				builder = CreateTestnet();
+				builder.SetNetworkType(NetworkType.Testnet);
+				builder.SetNetworkSet(this);
+				_Testnet = builder.BuildAndRegister();
+				builder = CreateRegtest();
+				builder.SetNetworkType(NetworkType.Regtest);
+				builder.SetNetworkSet(this);
+				_Regtest = builder.BuildAndRegister();
+				PostInit();
+				_Registered = true;
+				_Registering = false;
+			}
 		}
 
 		protected virtual void PostInit()
@@ -120,12 +124,24 @@ namespace NBitcoin
 			}
 		}
 
-		public abstract string CryptoCode { get; }
+		public abstract string CryptoCode
+		{
+			get;
+		}
 
 #if !NOFILEIO
-		protected void RegisterDefaultCookiePath(string folderName)
-		{
 
+		protected class FolderName
+		{
+			public string TestnetFolder
+			{
+				get; set;
+			} = "testnet3";
+		}
+
+		protected void RegisterDefaultCookiePath(string folderName, FolderName folder = null)
+		{
+			folder = folder ?? new FolderName();
 			var home = Environment.GetEnvironmentVariable("HOME");
 			var localAppData = Environment.GetEnvironmentVariable("APPDATA");
 
@@ -139,7 +155,7 @@ namespace NBitcoin
 				var mainnet = Path.Combine(bitcoinFolder, ".cookie");
 				RPCClient.RegisterDefaultCookiePath(Mainnet, mainnet);
 
-				var testnet = Path.Combine(bitcoinFolder, "testnet3", ".cookie");
+				var testnet = Path.Combine(bitcoinFolder, folder.TestnetFolder, ".cookie");
 				RPCClient.RegisterDefaultCookiePath(Testnet, testnet);
 
 				var regtest = Path.Combine(bitcoinFolder, "regtest", ".cookie");
@@ -152,7 +168,7 @@ namespace NBitcoin
 				var mainnet = Path.Combine(bitcoinFolder, ".cookie");
 				RPCClient.RegisterDefaultCookiePath(Mainnet, mainnet);
 
-				var testnet = Path.Combine(bitcoinFolder, "testnet3", ".cookie");
+				var testnet = Path.Combine(bitcoinFolder, folder.TestnetFolder, ".cookie");
 				RPCClient.RegisterDefaultCookiePath(Testnet, testnet);
 
 				var regtest = Path.Combine(bitcoinFolder, "regtest", ".cookie");
