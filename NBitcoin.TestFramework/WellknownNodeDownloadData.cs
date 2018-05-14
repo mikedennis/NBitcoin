@@ -343,7 +343,9 @@
 					Archive = "osx-x64.zip",
 					Executable = "osx-x64/stratisd",
 					Hash = "ffff"
-				},
+				}
+			};
+		}
 
 		public class MonacoinNodeDownloadData
 		{
