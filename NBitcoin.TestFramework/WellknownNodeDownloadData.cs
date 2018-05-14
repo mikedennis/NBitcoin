@@ -335,7 +335,7 @@
 					DownloadLink = "https://github.com/mikedennis/stratisX/releases/download/v{0}/linux-x64.tar.gz",
 					Archive = "linux-x64.tar.gz",
 					Executable = "linux-x64/stratisd",
-					Hash = "fc24d3bf71c06c11e34969e3e03f116975b661e4f1675badbf7a4df85d7ff9f0"
+					Hash = "187081c59cc572b71d61f262e403535e5722b001a1d3375747f9a072706fbd22"
 				},
 				Mac = new NodeOSDownloadData()
 				{
