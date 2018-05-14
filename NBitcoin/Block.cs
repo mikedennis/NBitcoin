@@ -128,7 +128,7 @@ namespace NBitcoin
 		// header
 		const int CURRENT_VERSION = 3;
 
-		uint256 hashPrevBlock;
+		protected uint256 hashPrevBlock;
 
 		public uint256 HashPrevBlock
 		{
@@ -141,10 +141,10 @@ namespace NBitcoin
 				hashPrevBlock = value;
 			}
 		}
-		uint256 hashMerkleRoot;
+		protected uint256 hashMerkleRoot;
 
-		uint nTime;
-		uint nBits;
+		protected uint nTime;
+		protected uint nBits;
 
 		public Target Bits
 		{
@@ -158,7 +158,7 @@ namespace NBitcoin
 			}
 		}
 
-		int nVersion;
+		protected int nVersion;
 
 		public int Version
 		{
@@ -172,7 +172,7 @@ namespace NBitcoin
 			}
 		}
 
-		uint nNonce;
+		protected uint nNonce;
 
 		public uint Nonce
 		{
@@ -454,8 +454,11 @@ namespace NBitcoin
 
 		public virtual void ReadWrite(BitcoinStream stream)
 		{
-			stream.ReadWrite(ref header);
-			stream.ReadWrite(ref vtx);
+			using(stream.ConsensusFactoryScope(GetConsensusFactory()))
+			{
+				stream.ReadWrite(ref header);
+				stream.ReadWrite(ref vtx);
+			}
 		}
 
 		public bool HeaderOnly
@@ -579,11 +582,11 @@ namespace NBitcoin
 		{
 			if(address == null)
 				throw new ArgumentNullException("address");
-			Block block = address.Network.Consensus.ConsensusFactory.CreateBlock();
+			Block block = GetConsensusFactory().CreateBlock();
 			block.Header.Nonce = RandomUtils.GetUInt32();
 			block.Header.HashPrevBlock = this.GetHash();
 			block.Header.BlockTime = now;
-			var tx = block.AddTransaction(new Transaction());
+			var tx = block.AddTransaction(GetConsensusFactory().CreateTransaction());
 			tx.AddInput(new TxIn()
 			{
 				ScriptSig = new Script(Op.GetPushOp(RandomUtils.GetBytes(30)))

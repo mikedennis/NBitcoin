@@ -111,6 +111,35 @@
 			};
 		}
 
+		public class ViacoinNodeDownloadData
+		{
+			public NodeDownloadData v0_15_1 = new NodeDownloadData()
+			{
+				Version = "0.15.1",
+				Windows = new NodeOSDownloadData()
+				{
+					DownloadLink = "https://github.com/viacoin/viacoin/releases/download/v{0}/viacoin-{0}-win64.zip",
+					Archive = "viacoin-{0}-win64.zip",
+					Executable = "viacoin-{0}/bin/viacoind.exe",
+					Hash = "408d270db88e345fb5d4e93b5ec0f7761c676e4d795458ebaffce6de6cde65af"
+				},
+				Linux = new NodeOSDownloadData()
+				{
+					DownloadLink = "https://github.com/viacoin/viacoin/releases/download/v{0}.0/viacoin-{0}-x86_64-linux-gnu.tar.gz",
+					Archive = "viacoin-{0}-linux64.tar.gz",
+					Executable = "viacoin-{0}/bin/viacoind",
+					Hash = "673bfd17194ca4fe8408450e1871447d461ce26925e71ea55eebd89c379f5775"
+				},
+				Mac = new NodeOSDownloadData()
+				{
+					DownloadLink = "https://github.com/viacoin/viacoin/releases/download/v{0}.0/viacoin-{0}-osx-unsigned.dmg",
+					Archive = "viacoin-{0}-osx64.tar.gz",
+					Executable = "viacoin-{0}/bin/viacoind",
+					Hash = "673bfd17194ca4fe8408450e1871447d461ce26925e71ea55eebd89c379f5775"
+				}
+			};
+		}
+
 		public class BCashNodeDownloadData
 		{
 			public NodeDownloadData v0_16_2 = new NodeDownloadData()
@@ -226,6 +255,93 @@
 				}
 			};
 		}
+		
+		public class BGoldNodeDownloadData
+		{
+			public NodeDownloadData v0_15_0 = new NodeDownloadData()
+			{
+				Version = "0.15.0",
+				Windows = new NodeOSDownloadData()
+				{
+					DownloadLink = "https://github.com/BTCGPU/BTCGPU/releases/download/v{0}.2/bitcoin-gold-{0}-win64.zip",
+					Archive = "bitcoin-gold-{0}-win64.zip",
+					Executable = "bitcoin-gold-{0}/bin/bgoldd.exe",
+					Hash = "497dba65c2047bc374532d83f91bf38bc7b44eae2eca36b9a375b59abfe9e6fc"
+				},
+				Linux = new NodeOSDownloadData()
+				{
+					DownloadLink = "https://github.com/BTCGPU/BTCGPU/releases/download/v{0}.2/bitcoin-gold-{0}-x86_64-linux-gnu.tar.gz",
+					Archive = "bitcoin-gold-{0}-x86_64-linux-gnu.tar.gz",
+					Executable = "bitcoin-gold-{0}/bin/bgoldd",
+					Hash = "c49fa0874333837526cf1b4fce5b58abe6437b48e64dcf095654e6317e1f66a3"
+				},
+				Mac = new NodeOSDownloadData()
+				{
+					DownloadLink = "https://github.com/BTCGPU/BTCGPU/releases/download/v{0}.2/bitcoin-gold-{0}-osx64.tar.gz",
+					Archive = "bitcoin-gold-{0}-osx64.tar.gz",
+					Executable = "bitcoin-gold-{0}/bin/bgoldd",
+					Hash = "87bb6dd288ffa3d0cd753a8013a177a2e48b63ddf10f3593634388b59a60c45b"
+				},
+			};
+		}
+
+		public class PolisNodeDownloadData
+		{
+			public NodeDownloadData v1_3_0 = new NodeDownloadData()
+			{
+				Version = "1.3.0",
+				Windows = new NodeOSDownloadData()
+				{
+					DownloadLink = "https://github.com/polispay/polis/releases/download/v{0}/poliscore-{0}-win64.zip",
+					Archive = "poliscore-{0}-win64.zip",
+					Executable = "poliscore-1.3.0/bin/polisd.exe",
+					Hash = "eec3d9b0c721d690139bc9ac11344ba370245c4ade5d6ec6750eda27493b2390"
+				},
+				Linux = new NodeOSDownloadData()
+				{
+					DownloadLink = "https://github.com/polispay/polis/releases/download/v{0}/poliscore-{0}-x86_64-linux-gnu.tar.gz",
+					Archive = "poliscore-{0}-linux64.tar.gz",
+					Executable = "poliscore-1.3.0/bin/polisd",
+					Hash = "50c3599645fbcfdfa35f4704ed742bbb5fa1ca432067f9b2368deea9784ec771"
+				},
+				Mac = new NodeOSDownloadData()
+				{
+					DownloadLink = "https://github.com/polispay/polis/releases/download/v{0}/poliscore-{0}-osx.dmg",
+					Archive = "poliscore-{0}-osx.dmg",
+					Executable = "poliscore-1.3.0/bin/polisd",
+					Hash = "2d67048a8e51d6c1384752cfde6a3562b1b1ba250fce28020e8afe894a9b5afe"
+				}
+			};
+		}
+
+		public class MonacoinNodeDownloadData
+		{
+			public NodeDownloadData v0_15_1 = new NodeDownloadData()
+			{
+				Version = "0.15.1",
+				Windows = new NodeOSDownloadData()
+				{
+					DownloadLink = "https://github.com/monacoinproject/monacoin/releases/download/monacoin-{0}/monacoin-{0}-win64.zip",
+					Archive = "monacoin-{0}-win64.zip",
+					Executable = "monacoin-{0}/bin/monacoind.exe",
+					Hash = "420cba3c5e70cc913c2cacab9162e8fd1408fc2aaa345b04d3f44615c63d7b17"
+				},
+				Linux = new NodeOSDownloadData()
+				{
+					DownloadLink = "https://github.com/monacoinproject/monacoin/releases/download/monacoin-{0}/monacoin-{0}-x86_64-linux-gnu.tar.gz",
+					Archive = "monacoin-{0}-linux64.tar.gz",
+					Executable = "monacoin-{0}/bin/monacoind",
+					Hash = "8199f92d4296ea99891db34f5d779d7e95a2338425544b82b04fd8b427dae905"
+				},
+				Mac = new NodeOSDownloadData()
+				{
+					DownloadLink = "https://github.com/monacoinproject/monacoin/releases/download/monacoin-{0}/monacoin-{0}-osx-unsigned.dmg",
+					Archive = "monacoin-{0}-osx.dmg",
+					Executable = "monacoin-{0}/bin/monacoind",
+					Hash = "d19cc2cc12732c49351add23075c4f7a4ec92ee04874ec7037429dc4f9f1c058"
+				}
+			};
+		}
 
 		public class StratisNodeDownloadData
 		{
@@ -266,6 +382,11 @@
 			get; set;
 		} = new LitecoinNodeDownloadData();
 
+		public static ViacoinNodeDownloadData Viacoin
+		{
+			get; set;
+		} = new ViacoinNodeDownloadData();
+		
 		public static BCashNodeDownloadData BCash
 		{
 			get; set;
@@ -290,5 +411,20 @@
 		{
 			get; set;
 		} = new StratisNodeDownloadData();
+
+		public static BGoldNodeDownloadData BGold
+		{
+			get; set;
+		} = new BGoldNodeDownloadData();
+
+		public static PolisNodeDownloadData Polis
+		{
+			get; set;
+		} = new PolisNodeDownloadData();
+
+		public static MonacoinNodeDownloadData Monacoin
+		{
+			get; set;
+		} = new MonacoinNodeDownloadData();
 	}
 }
