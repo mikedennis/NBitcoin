@@ -171,30 +171,30 @@
 
 		public class FeathercoinNodeDownloadData
 		{
-			public NodeDownloadData v0_13_1 = new NodeDownloadData()
+			public NodeDownloadData v0_16_0 = new NodeDownloadData()
 			{
-				Version = "0.13.1",
+				Version = "0.16.0",
 				Windows = new NodeOSDownloadData()
 				{
-					DownloadLink = "https://github.com/FeatherCoin/Feathercoin/releases/download/v{0}.0/feathercoin-{0}-win-setup.exe",
+					DownloadLink = "https://downloads.feathercoin.com/feathercoin-{0}.zip",
 					Archive = "feathercoin-{0}-win64.zip",
 					Executable = "feathercoin-{0}/bin/feathercoind.exe",
-					Hash = "7eb76875e38bf3c2ed35afe06d2b133780b935b81a285f8de5522ebb6e99523c"
-				},
+					Hash = "5BA572C4283E8C4C0332A8072C82B4C8FD6CADD0D15E6400BA1C0C2991575155"
+                },
 				Linux = new NodeOSDownloadData()
 				{
-					DownloadLink = "https://github.com/FeatherCoin/Feathercoin/releases/download/v{0}.0/feathercoin-{0}-linux64.tar.gz",
-					Archive = "feathercoin-{0}-linux64.tar.gz",
+					DownloadLink = "http://downloads.feathercoin.com/feathercoin-0.16.0-x86_64-linux-gnu.tar.gz",
+					Archive = "feathercoin-{0}-x86_64-linux-gnu.tar.gz",
 					Executable = "feathercoin-{0}/bin/feathercoind",
-					Hash = "a24ec110cc45c935028f64198e054e1a7b096caf7671614f288f38ec516e1fd9"
-				},
+					Hash = "5673DA0CE1141D5417D6EE502DAD8741F36100CDF89B4F67A525475E9EB435DE"
+                },
 				Mac = new NodeOSDownloadData()
 				{
-					DownloadLink = "https://github.com/FeatherCoin/Feathercoin/releases/download/v{0}.0/feathercoin-{0}-mac.dmg",
+					DownloadLink = "http://downloads.feathercoin.com/feathercoin-{0}-osx64.tar.gz",
 					Archive = "feathercoin-{0}-osx64.tar.gz",
 					Executable = "feathercoin-{0}/bin/feathercoind",
-					Hash = "19d243507d8e1ad5de22b82363f5fad069037f9b419f7c01ed56af5150060737"
-				}
+					Hash = "E6ECE15424DDD83E3FAC64F9A0786AD40F8D89A24ECDC6285353435CD46EEBB1"
+                }
 			};
 		}
 
@@ -376,6 +376,35 @@
 			};
 		}
 
+        public class UfoNodeDownloadData
+        {
+            public NodeDownloadData v0_16_0 = new NodeDownloadData()
+            {
+                Version = "0.16.0",
+                Windows = new NodeOSDownloadData()
+                {
+                    DownloadLink = "https://downloads.ufobject.com/ufo-0.16.0.zip",
+                    Archive = "UFO-{0}-win64.zip",
+                    Executable = "UFO-{0}/bin/ufod.exe",
+                    Hash = "B06D8564CF2BF95EDD4AECEB3F725C12FB18A31398E59B48A242AED210261FAE"
+                },
+                Linux = new NodeOSDownloadData()
+                {
+                    DownloadLink = "https://downloads.ufobject.com/ufo-0.16.0-x86_64-linux-gnu.tar.gz",
+                    Archive = "UFO-{0}-linux64.tar.gz",
+                    Executable = "UFO-{0}/bin/ufod",
+                    Hash = "2A0F4ED78EA58C232CCEA6DDD4EB36F766C72663D1DF9B6FDA0CB39143FE0F60"
+                },
+                Mac = new NodeOSDownloadData()
+                {
+                    DownloadLink = "https://downloads.ufobject.com/ufo-0.16.0-osx64.tar.gz",
+                    Archive = "UFO-{0}-osx.dmg",
+                    Executable = "UFO-{0}/bin/ufod",
+                    Hash = "5CC7E5F742584BAD0CADD516B09C93566D38B42C352F21D521C84C9490088ACB"
+				}
+			};
+		}
+
 		public static BitcoinNodeDownloadData Bitcoin
 		{
 			get; set;
@@ -430,5 +459,10 @@
 		{
 			get; set;
 		} = new MonacoinNodeDownloadData();
+
+		public static UfoNodeDownloadData Ufo
+		{
+			get; set;
+		} = new UfoNodeDownloadData();
 	}
 }

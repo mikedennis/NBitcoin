@@ -39,9 +39,9 @@ namespace NBitcoin
 		public static T ToNetwork<T>(this T obj, Network network) where T : IBitcoinString
 		{
 			if(network == null)
-				throw new ArgumentNullException("network");
+				throw new ArgumentNullException(nameof(network));
 			if(obj == null)
-				throw new ArgumentNullException("obj");
+				throw new ArgumentNullException(nameof(obj));
 			if(obj.Network == network)
 				return obj;
 			if(obj is IBase58Data)
@@ -152,9 +152,9 @@ namespace NBitcoin
 		public static int ReadEx(this Stream stream, byte[] buffer, int offset, int count, CancellationToken cancellation = default(CancellationToken))
 		{
 			if(stream == null)
-				throw new ArgumentNullException("stream");
+				throw new ArgumentNullException(nameof(stream));
 			if(buffer == null)
-				throw new ArgumentNullException("buffer");
+				throw new ArgumentNullException(nameof(buffer));
 			if(offset < 0 || offset > buffer.Length)
 				throw new ArgumentOutOfRangeException("offset");
 			if(count <= 0 || count > buffer.Length)
@@ -205,22 +205,24 @@ namespace NBitcoin
 
 		public static int ReadEx(this Stream stream, byte[] buffer, int offset, int count, CancellationToken cancellation = default(CancellationToken))
 		{
-			if(stream == null) throw new ArgumentNullException("stream");
-			if(buffer == null) throw new ArgumentNullException("buffer");
+			if(stream == null) throw new ArgumentNullException(nameof(stream));
+			if(buffer == null) throw new ArgumentNullException(nameof(buffer));
 			if(offset < 0 || offset > buffer.Length) throw new ArgumentOutOfRangeException("offset");
 			if(count <= 0 || count > buffer.Length) throw new ArgumentOutOfRangeException("count"); //Disallow 0 as a debugging aid.
 			if(offset > buffer.Length - count) throw new ArgumentOutOfRangeException("count");
 
 			//IO interruption not supported on these platforms.
-
+			
 			int totalReadCount = 0;
-
+#if !NOSOCKET
+			var interruptable = stream is NetworkStream && cancellation.CanBeCanceled;
+#endif
 			while(totalReadCount < count)
 			{
 				cancellation.ThrowIfCancellationRequested();
 				int currentReadCount = 0;
 #if !NOSOCKET
-				if(stream is NetworkStream && cancellation.CanBeCanceled)
+				if(interruptable)
 				{
 					currentReadCount = stream.ReadAsync(buffer, offset + totalReadCount, count - totalReadCount, cancellation).GetAwaiter().GetResult();
 				}
@@ -231,6 +233,26 @@ namespace NBitcoin
 				}
 				if(currentReadCount == 0)
 					return 0;
+				totalReadCount += currentReadCount;
+			}
+
+			return totalReadCount;
+		}
+#endif
+
+#if HAS_SPAN
+		public static int ReadEx(this Stream stream, Span<byte> buffer, CancellationToken cancellation = default(CancellationToken))
+		{
+			if(stream == null)
+				throw new ArgumentNullException(nameof(stream));
+			int totalReadCount = 0;
+			while(!buffer.IsEmpty)
+			{
+				cancellation.ThrowIfCancellationRequested();
+				int currentReadCount = stream.Read(buffer);
+				if(currentReadCount == 0)
+					return 0;
+				buffer = buffer.Slice(currentReadCount);
 				totalReadCount += currentReadCount;
 			}
 
@@ -299,7 +321,7 @@ namespace NBitcoin
 		internal static byte[] SafeSubarray(this byte[] array, int offset, int count)
 		{
 			if(array == null)
-				throw new ArgumentNullException("array");
+				throw new ArgumentNullException(nameof(array));
 			if(offset < 0 || offset > array.Length)
 				throw new ArgumentOutOfRangeException("offset");
 			if(count < 0 || offset + count > array.Length)
@@ -314,7 +336,7 @@ namespace NBitcoin
 		internal static byte[] SafeSubarray(this byte[] array, int offset)
 		{
 			if(array == null)
-				throw new ArgumentNullException("array");
+				throw new ArgumentNullException(nameof(array));
 			if(offset < 0 || offset > array.Length)
 				throw new ArgumentOutOfRangeException("offset");
 
@@ -481,7 +503,7 @@ namespace NBitcoin
 		public static BigInteger BytesToBigInteger(byte[] data)
 		{
 			if(data == null)
-				throw new ArgumentNullException("data");
+				throw new ArgumentNullException(nameof(data));
 			if(data.Length == 0)
 				return BigInteger.Zero;
 			data = data.ToArray();

@@ -191,7 +191,7 @@ namespace NBitcoin.RPC
 			{
 				network = Network.GetNetworks().FirstOrDefault(n => n.RPCPort == address.Port);
 				if(network == null)
-					throw new ArgumentNullException("network");
+					throw new ArgumentNullException(nameof(network));
 			}
 
 			if(credentials.UseDefault && network == null)
@@ -782,28 +782,28 @@ namespace NBitcoin.RPC
 		public void AddNode(EndPoint nodeEndPoint, bool onetry = false)
 		{
 			if(nodeEndPoint == null)
-				throw new ArgumentNullException("nodeEndPoint");
+				throw new ArgumentNullException(nameof(nodeEndPoint));
 			SendCommand("addnode", nodeEndPoint.ToString(), onetry ? "onetry" : "add");
 		}
 
 		public async Task AddNodeAsync(EndPoint nodeEndPoint, bool onetry = false)
 		{
 			if(nodeEndPoint == null)
-				throw new ArgumentNullException("nodeEndPoint");
+				throw new ArgumentNullException(nameof(nodeEndPoint));
 			await SendCommandAsync(RPCOperations.addnode, nodeEndPoint.ToString(), onetry ? "onetry" : "add").ConfigureAwait(false);
 		}
 
 		public void RemoveNode(EndPoint nodeEndPoint)
 		{
 			if(nodeEndPoint == null)
-				throw new ArgumentNullException("nodeEndPoint");
+				throw new ArgumentNullException(nameof(nodeEndPoint));
 			SendCommandAsync(RPCOperations.addnode, nodeEndPoint.ToString(), "remove");
 		}
 
 		public async Task RemoveNodeAsync(EndPoint nodeEndPoint)
 		{
 			if(nodeEndPoint == null)
-				throw new ArgumentNullException("nodeEndPoint");
+				throw new ArgumentNullException(nameof(nodeEndPoint));
 			await SendCommandAsync(RPCOperations.addnode, nodeEndPoint.ToString(), "remove").ConfigureAwait(false);
 		}
 
@@ -842,7 +842,7 @@ namespace NBitcoin.RPC
 		public async Task<AddedNodeInfo> GetAddedNodeInfoAync(bool detailed, EndPoint nodeEndPoint)
 		{
 			if(nodeEndPoint == null)
-				throw new ArgumentNullException("nodeEndPoint");
+				throw new ArgumentNullException(nameof(nodeEndPoint));
 
 			try
 			{
@@ -949,7 +949,7 @@ namespace NBitcoin.RPC
 		/// <returns></returns>
 		public async Task<Block> GetBlockAsync(uint256 blockId)
 		{
-			var resp = await SendCommandAsync(RPCOperations.getblock, blockId.ToString(), false).ConfigureAwait(false);
+			var resp = await SendCommandAsync(RPCOperations.getblock, blockId, false).ConfigureAwait(false);
 			return Block.Parse(resp.Result.ToString(), Network);
 		}
 
@@ -976,13 +976,13 @@ namespace NBitcoin.RPC
 
 		public BlockHeader GetBlockHeader(uint256 blockHash)
 		{
-			var resp = SendCommand("getblockheader", blockHash.ToString());
+			var resp = SendCommand("getblockheader", blockHash);
 			return ParseBlockHeader(resp);
 		}
 
 		public async Task<BlockHeader> GetBlockHeaderAsync(uint256 blockHash)
 		{
-			var resp = await SendCommandAsync("getblockheader", blockHash.ToString()).ConfigureAwait(false);
+			var resp = await SendCommandAsync("getblockheader", blockHash).ConfigureAwait(false);
 			return ParseBlockHeader(resp);
 		}
 
@@ -1064,7 +1064,7 @@ namespace NBitcoin.RPC
 		/// <returns>null if spent or never existed</returns>
 		public async Task<GetTxOutResponse> GetTxOutAsync(uint256 txid, int index, bool includeMempool = true)
 		{
-			var response = await SendCommandAsync(RPCOperations.gettxout, txid.ToString(), index, includeMempool).ConfigureAwait(false);
+			var response = await SendCommandAsync(RPCOperations.gettxout, txid, index, includeMempool).ConfigureAwait(false);
 			if (string.IsNullOrWhiteSpace(response?.ResultString))
 			{
 				return null;
@@ -1092,9 +1092,9 @@ namespace NBitcoin.RPC
 		public IEnumerable<Transaction> GetTransactions(uint256 blockHash)
 		{
 			if(blockHash == null)
-				throw new ArgumentNullException("blockHash");
+				throw new ArgumentNullException(nameof(blockHash));
 
-			var resp = SendCommand(RPCOperations.getblock, blockHash.ToString());
+			var resp = SendCommand(RPCOperations.getblock, blockHash);
 
 			var tx = resp.Result["tx"] as JArray;
 			if(tx != null)
@@ -1155,7 +1155,7 @@ namespace NBitcoin.RPC
 
 		public async Task<Transaction> GetRawTransactionAsync(uint256 txid, bool throwIfNotFound = true)
 		{
-			var response = await SendCommandAsync(new RPCRequest(RPCOperations.getrawtransaction, new[] { txid.ToString() }), throwIfNotFound).ConfigureAwait(false);
+			var response = await SendCommandAsync(new RPCRequest(RPCOperations.getrawtransaction, new[] { txid }), throwIfNotFound).ConfigureAwait(false);
 			if(throwIfNotFound)
 				response.ThrowIfError();
 			if(response.Error != null && response.Error.Code == RPCErrorCode.RPC_INVALID_ADDRESS_OR_KEY)
@@ -1165,6 +1165,31 @@ namespace NBitcoin.RPC
 			var tx = new Transaction();
 			tx.ReadWrite(Encoders.Hex.DecodeData(response.Result.ToString()));
 			return tx;
+		}
+
+		public RawTransactionInfo GetRawTransactionInfo(uint256 txid)
+		{
+			return GetRawTransactionInfoAsync(txid).GetAwaiter().GetResult();
+		}
+
+		public async Task<RawTransactionInfo> GetRawTransactionInfoAsync(uint256 txId)
+		{
+			var request = new RPCRequest(RPCOperations.getrawtransaction, new object[]{ txId, true });
+			var response = await SendCommandAsync(request);
+			var json = response.Result;
+			return new RawTransactionInfo{
+				Transaction = Transaction.Parse(json.Value<string>("hex")),
+				TransactionId = uint256.Parse(json.Value<string>("txid")),
+				TransactionTime = json["time"] != null ? NBitcoin.Utils.UnixTimeToDateTime(json.Value<long>("time")): (DateTimeOffset?)null,
+				Hash = uint256.Parse(json.Value<string>("hash")),
+				Size = json.Value<uint>("size"),
+				VirtualSize = json.Value<uint>("vsize"),
+				Version = json.Value<uint>("version"),
+				LockTime = new LockTime(json.Value<uint>("locktime")),
+				BlockHash = json["blockhash"] != null ? uint256.Parse(json.Value<string>("blockhash")): null,
+				Confirmations = json.Value<uint>("confirmations"),
+				BlockTime = json["blocktime"] != null ? NBitcoin.Utils.UnixTimeToDateTime(json.Value<long>("blocktime")) : (DateTimeOffset?)null
+			};
 		}
 
 		public void SendRawTransaction(Transaction tx)
@@ -1194,7 +1219,7 @@ namespace NBitcoin.RPC
 
 		public async Task<BumpResponse> BumpFeeAsync(uint256 txid)
 		{
-			var response = await SendCommandAsync(RPCOperations.bumpfee, txid.ToString());
+			var response = await SendCommandAsync(RPCOperations.bumpfee, txid);
 			var o = response.Result;
 			return new BumpResponse{
 				TransactionId = uint256.Parse((string)o["txid"]),
@@ -1388,7 +1413,7 @@ namespace NBitcoin.RPC
 		/// <param name="blockhash">the hash of the block to mark as invalid</param>
 		public void InvalidateBlock(uint256 blockhash)
 		{
-			SendCommand(RPCOperations.invalidateblock, blockhash.ToString());
+			SendCommand(RPCOperations.invalidateblock, blockhash);
 		}
 
 		/// <summary>
@@ -1397,7 +1422,27 @@ namespace NBitcoin.RPC
 		/// <param name="blockhash">the hash of the block to mark as invalid</param>
 		public async Task InvalidateBlockAsync(uint256 blockhash)
 		{
-			await SendCommandAsync(RPCOperations.invalidateblock, blockhash.ToString()).ConfigureAwait(false);
+			await SendCommandAsync(RPCOperations.invalidateblock, blockhash).ConfigureAwait(false);
+		}
+
+		/// <summary>
+		/// Marks a transaction and all its in-wallet descendants as abandoned which will allow
+		/// for their inputs to be respent.
+		/// </summary>
+		/// <param name="txId">the transaction id to be marked as abandoned.</param>
+		public void AbandonTransaction(uint256 txId)
+		{
+			SendCommand(RPCOperations.abandontransaction, txId.ToString());
+		}
+
+		/// <summary>
+		/// Marks a transaction and all its in-wallet descendants as abandoned which will allow
+		/// for their inputs to be respent.
+		/// </summary>
+		/// <param name="txId">the transaction id to be marked as abandoned.</param>
+		public async Task AbandonTransactionAsync(uint256 txId)
+		{
+			await SendCommandAsync(RPCOperations.abandontransaction, txId.ToString()).ConfigureAwait(false);
 		}
 
 #endregion
@@ -1562,6 +1607,21 @@ namespace NBitcoin.RPC
 		public List<Bip9SoftFork> Bip9SoftForks { get; set; }
 	}
 
+	public class RawTransactionInfo
+	{
+		public Transaction Transaction {get; internal set;}
+		public uint256 TransactionId {get; internal set;}
+		public uint256 Hash {get; internal set;}
+		public uint Size {get; internal set;}
+		public uint VirtualSize {get; internal set;}
+		public uint Version {get; internal set;}
+		public LockTime LockTime {get; internal set;}
+		public uint256 BlockHash {get; internal set;}
+		public uint Confirmations {get; internal set;}
+		public DateTimeOffset? TransactionTime {get; internal set;}
+		public DateTimeOffset? BlockTime {get; internal set;}
+	}
+	
 	public class BumpResponse
 	{
 		public uint256 TransactionId { get; set; }
