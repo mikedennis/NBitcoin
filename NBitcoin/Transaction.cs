@@ -1097,7 +1097,7 @@ namespace NBitcoin
 			return _Inputs.All(i => i.WitScript.PushCount == 0);
 		}
 
-		public void ReadWrite(BitcoinStream stream)
+		internal void ReadWrite(BitcoinStream stream)
 		{
 			for(int i = 0; i < _Inputs.Count; i++)
 			{
