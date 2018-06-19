@@ -145,6 +145,40 @@ namespace NBitcoin.Altcoins
 			}
 		}
 
+		private class StratisWitness
+		{
+			private TxInList _Inputs;
+
+			public StratisWitness(TxInList inputs)
+			{
+				_Inputs = inputs;
+			}
+
+			internal bool IsNull()
+			{
+				return _Inputs.All(i => i.WitScript.PushCount == 0);
+			}
+
+			public void ReadWrite(BitcoinStream stream)
+			{
+				for (int i = 0; i < _Inputs.Count; i++)
+				{
+					if (stream.Serializing)
+					{
+						var bytes = (_Inputs[i].WitScript ?? WitScript.Empty).ToBytes();
+						stream.ReadWrite(ref bytes);
+					}
+					else
+					{
+						_Inputs[i].WitScript = WitScript.Load(stream);
+					}
+				}
+
+				if (IsNull())
+					throw new FormatException("Superfluous witness record");
+			}
+		}
+
 		public class StratisTransaction : Transaction
 		{
 			public StratisTransaction(ConsensusFactory consensusFactory)
@@ -224,7 +258,7 @@ namespace NBitcoin.Altcoins
 				{
 					/* The witness flag is present, and we support witnesses. */
 					flags ^= 1;
-					Witness wit = new Witness(vinTemp);
+					StratisWitness wit = new StratisWitness(vinTemp);
 					wit.ReadWrite(stream);
 				}
 				if (flags != 0)
@@ -275,7 +309,7 @@ namespace NBitcoin.Altcoins
 				vout.Transaction = this;
 				if ((flags & 1) != 0)
 				{
-					Witness wit = new Witness(this.Inputs);
+					StratisWitness wit = new StratisWitness(this.Inputs);
 					wit.ReadWrite(stream);
 				}
 				LockTime lockTime = this.LockTime;

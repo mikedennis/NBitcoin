@@ -1084,7 +1084,7 @@ namespace NBitcoin
 		All = Witness
 	}
 
-	public class Witness
+	class Witness
 	{
 		TxInList _Inputs;
 		public Witness(TxInList inputs)
