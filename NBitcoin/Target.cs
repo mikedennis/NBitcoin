@@ -2,6 +2,7 @@
 using System;
 using System.Globalization;
 using System.Linq;
+using System.Text;
 
 namespace NBitcoin
 {
@@ -73,6 +74,8 @@ namespace NBitcoin
 			var val = bytes.SafeSubarray(0, Math.Min(bytes.Length, 3));
 			Array.Reverse(val);
 			var exp = (byte)(bytes.Length);
+			if(exp == 1 && bytes[0] == 0)
+				exp = 0;
 			var missing = 4 - val.Length;
 			if(missing > 0)
 				val = val.Concat(new byte[missing]).ToArray();
@@ -93,16 +96,22 @@ namespace NBitcoin
 					var quotient = qr[0];
 					var remainder = qr[1];
 					var decimalPart = BigInteger.Zero;
-					for(int i = 0; i < 12; i++)
+
+					var quotientStr = quotient.ToString();
+					int precision = 12;
+					StringBuilder builder = new StringBuilder(quotientStr.Length + 1 + precision);
+					builder.Append(quotientStr);
+					builder.Append('.');
+					for(int i = 0; i < precision; i++)
 					{
 						var div = (remainder.Multiply(BigInteger.Ten)).Divide(_Target);
-
 						decimalPart = decimalPart.Multiply(BigInteger.Ten);
 						decimalPart = decimalPart.Add(div);
 
 						remainder = remainder.Multiply(BigInteger.Ten).Subtract(div.Multiply(_Target));
 					}
-					_Difficulty = double.Parse(quotient.ToString() + "." + decimalPart.ToString(), new NumberFormatInfo()
+					builder.Append(decimalPart.ToString().PadLeft(precision, '0'));
+					_Difficulty = double.Parse(builder.ToString(), new NumberFormatInfo()
 					{
 						NegativeSign = "-",
 						NumberDecimalSeparator = "."

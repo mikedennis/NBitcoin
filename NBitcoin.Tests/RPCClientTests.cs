@@ -55,6 +55,35 @@ namespace NBitcoin.Tests
 		}
 
 		[Fact]
+		public void CanGetNewAddress()
+		{
+			using(var builder = NodeBuilderEx.Create())
+			{
+				var rpc = builder.CreateNode().CreateRPCClient();
+				builder.StartAll();
+				var address = rpc.GetNewAddress(new GetNewAddressRequest()
+				{
+					AddressType = AddressType.Bech32
+				});
+				Assert.IsType<BitcoinWitPubKeyAddress>(address);
+
+				address = rpc.GetNewAddress(new GetNewAddressRequest()
+				{
+					AddressType = AddressType.P2SHSegwit
+				});
+
+				Assert.IsType<BitcoinScriptAddress>(address);
+
+				address = rpc.GetNewAddress(new GetNewAddressRequest()
+				{
+					AddressType = AddressType.Legacy
+				});
+
+				Assert.IsType<BitcoinPubKeyAddress>(address);
+			}
+		}
+
+		[Fact]
 		public void CanUseMultipleWallets()
 		{
 			using(var builder = NodeBuilderEx.Create())
@@ -115,6 +144,23 @@ namespace NBitcoin.Tests
 		}
 
 		[Fact]
+		public void CanGetMemPool()
+		{
+			using (var builder = NodeBuilderEx.Create())
+			{
+				var node = builder.CreateNode();
+				var rpc = node.CreateRPCClient();
+				builder.StartAll();
+				node.Generate(101);
+
+				var txid = rpc.SendToAddress(new Key().PubKey.GetAddress(rpc.Network), Money.Coins(1.0m), "hello", "world");
+				var memPoolInfo = rpc.GetMemPool();
+				Assert.NotNull(memPoolInfo);
+				Assert.Equal(1, memPoolInfo.Size);
+			}
+		}
+
+		[Fact]
 		public void CanUseAsyncRPC()
 		{
 			using(var builder = NodeBuilderEx.Create())
@@ -141,7 +187,8 @@ namespace NBitcoin.Tests
 				tx.Outputs.Add(new TxOut(Money.Coins(1.0m), new Key()));
 				var funded = node.CreateRPCClient().FundRawTransaction(tx);
 				var signed = node.CreateRPCClient().SignRawTransaction(funded.Transaction);
-				node.CreateRPCClient().SendRawTransaction(signed);
+				var txId = node.CreateRPCClient().SendRawTransaction(signed);
+				Assert.Equal(signed.GetHash(), txId);
 			}
 		}
 
@@ -889,7 +936,6 @@ namespace NBitcoin.Tests
 			}
 		}
 
-#if !PORTABLE
 		[Fact]
 		public void CanGetPeersInfo()
 		{
@@ -906,8 +952,8 @@ namespace NBitcoin.Tests
 				}
 			}
 		}
-#endif
-#if !NOSOCKET && WIN
+
+#if !NOSOCKET
 		[Fact]
 		[Trait("UnitTest", "UnitTest")]
 		public void CanParseIpEndpoint()
@@ -922,7 +968,16 @@ namespace NBitcoin.Tests
 			endpoint = Utils.ParseIpEndpoint("10.10.1.3:94", 90);
 			Assert.Equal("10.10.1.3", endpoint.Address.ToString());
 			Assert.Equal(94, endpoint.Port);
-			Assert.Throws<System.Net.Sockets.SocketException>(() => Utils.ParseIpEndpoint("2001:db8:1f70::999:de8:7648:6e8:100", 90));
+
+			Exception exception = null;
+			try {
+				Utils.ParseIpEndpoint("2001:db8:1f70::999:de8:7648:6e8:100", 90);
+			} catch (Exception ex) {
+				exception = ex;
+			}
+			Assert.NotNull(exception);
+			Assert.True(exception.GetType().FullName.Contains("SocketException"));
+
 			endpoint = Utils.ParseIpEndpoint("2001:db8:1f70::999:de8:7648:6e8", 90);
 			Assert.Equal("2001:db8:1f70:0:999:de8:7648:6e8", endpoint.Address.ToString());
 			Assert.Equal(90, endpoint.Port);

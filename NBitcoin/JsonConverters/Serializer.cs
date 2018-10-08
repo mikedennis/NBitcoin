@@ -22,16 +22,17 @@ namespace NBitcoin.JsonConverters
 			settings.Converters.Add(new KeyJsonConverter());
 			settings.Converters.Add(new CoinJsonConverter(network));
 			settings.Converters.Add(new ScriptJsonConverter());
+			settings.Converters.Add(new FeeRateJsonConverter());
 			settings.Converters.Add(new UInt160JsonConverter());
 			settings.Converters.Add(new UInt256JsonConverter());
-			settings.Converters.Add(new BitcoinSerializableJsonConverter());
+			settings.Converters.Add(new LockTimeJsonConverter());
+			settings.Converters.Add(new BitcoinSerializableJsonConverter(network));
 			settings.Converters.Add(new NetworkJsonConverter());
 			settings.Converters.Add(new KeyPathJsonConverter());
 			settings.Converters.Add(new SignatureJsonConverter());
 			settings.Converters.Add(new HexJsonConverter());
 			settings.Converters.Add(new DateTimeToUnixTimeConverter());
 			settings.Converters.Add(new TxDestinationJsonConverter());
-			settings.Converters.Add(new LockTimeJsonConverter());
 			settings.Converters.Add(new BitcoinStringJsonConverter()
 			{
 				Network = network

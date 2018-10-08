@@ -1,4 +1,5 @@
-﻿#region License
+﻿#pragma warning disable CS0618 // Type or member is obsolete
+#region License
 /*
 CryptSharp
 Copyright (c) 2011, 2013 James F. Bellinger <http://www.zer7.com/software/cryptsharp>
@@ -115,6 +116,7 @@ namespace NBitcoin.Crypto
 			return MFcrypt(key, salt, cost, blockSize, parallel, maxThreads);
 		}
 
+
 		/// <summary>
 		/// Creates a derived key stream from which a derived key can be read.
 		/// </summary>
@@ -141,7 +143,7 @@ namespace NBitcoin.Crypto
 		///     <c>null</c> will use as many threads as possible.
 		/// </param>
 		/// <returns>The derived key stream.</returns>
-#if !(USEBC || NETCORE)
+#if !(USEBC || NETCORE || NETSTANDARD1X)
 		internal static Pbkdf2 GetStream(byte[] key, byte[] salt,
 									   int cost, int blockSize, int parallel, int? maxThreads)
 		{
@@ -152,6 +154,7 @@ namespace NBitcoin.Crypto
 		}
 
 #else
+
 		internal static Pbkdf2 GetStream(byte[] key, byte[] salt,
 									   int cost, int blockSize, int parallel, int? maxThreads)
 		{
@@ -181,7 +184,7 @@ namespace NBitcoin.Crypto
 			Check.Range("parallel", parallel, 1, int.MaxValue / MFLen);
 			Check.Range("maxThreads", (int)maxThreads, 1, int.MaxValue);
 
-#if !(USEBC || NETCORE)
+#if !(USEBC || NETCORE || NETSTANDARD1X)
 			byte[] B = Pbkdf2.ComputeDerivedKey(new HMACSHA256(P), S, 1, parallel * MFLen);
 #else
 			var mac = new NBitcoin.BouncyCastle.Crypto.Macs.HMac(new NBitcoin.BouncyCastle.Crypto.Digests.Sha256Digest());
@@ -202,7 +205,7 @@ namespace NBitcoin.Crypto
 
 			return B;
 		}
-#if !(USEBC || NETCORE)
+#if !(USEBC || NETCORE || NETSTANDARD1X)
 		static void ThreadSMixCalls(uint[] B0, int MFLen,
 									int cost, int blockSize, int parallel, int maxThreads)
 		{
@@ -368,3 +371,4 @@ namespace NBitcoin.Crypto
 		}
 	}
 }
+#pragma warning restore CS0618 // Type or member is obsolete

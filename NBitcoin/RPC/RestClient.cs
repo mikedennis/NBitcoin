@@ -107,7 +107,10 @@ namespace NBitcoin.RPC
 				throw new ArgumentNullException(nameof(txId));
 
 			var result = await SendRequestAsync("tx", RestResponseFormat.Bin, txId.ToString()).ConfigureAwait(false);
-			return new Transaction(result);
+
+			var tx = Network.Consensus.ConsensusFactory.CreateTransaction();
+			tx.ReadWrite(result);
+			return tx;
 		}
 		/// <summary>
 		/// Gets a transaction.
@@ -219,7 +222,7 @@ namespace NBitcoin.RPC
 
 			var request = WebRequest.CreateHttp(uriBuilder.Uri);
 			request.Method = "GET";
-#if !(PORTABLE || NETCORE)
+#if !NETSTANDARD1X
 			request.KeepAlive = false;
 #endif
 			return request;

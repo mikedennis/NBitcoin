@@ -1,4 +1,4 @@
-﻿
+﻿#pragma warning disable CS0618 // Type or member is obsolete
 using System;
 using System.Collections.Generic;
 using System.Collections;
@@ -179,7 +179,7 @@ namespace NBitcoin
 			var salt = Concat(NoBOMUTF8.GetBytes("mnemonic"), Normalize(passphrase));
 			var bytes = Normalize(_Mnemonic);
 
-#if USEBC || WINDOWS_UWP || NETCORE
+#if USEBC || WINDOWS_UWP || NETCORE || NETSTANDARD1X
 			var mac = new NBitcoin.BouncyCastle.Crypto.Macs.HMac(new NBitcoin.BouncyCastle.Crypto.Digests.Sha512Digest());
 			mac.Init(new KeyParameter(bytes));
 			return Pbkdf2.ComputeDerivedKey(mac, salt, 2048, 64);
@@ -268,3 +268,4 @@ namespace NBitcoin
 		TwentyFour = 24
 	}
 }
+#pragma warning restore CS0618 // Type or member is obsolete

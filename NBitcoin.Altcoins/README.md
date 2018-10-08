@@ -2,14 +2,20 @@
 
 Currently supported altcoins are:
 
-* Litecoin
-* Feathercoin
-* Dogecoin
+* BCash
+* BGold
+* BitCore
 * Dash
-* BGold (also known as Bitcoin Gold)
-* Polis
-* BCash (also known as Bitcoin Cash)
+* Dogecoin
+* Dystem
+* Feathercoin
+* Groestlcoin
+* Litecoin
 * Monacoin
+* Polis
+* UFO
+* Viacoin
+* Zclassic
 
 ## How to use?
 
