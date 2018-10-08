@@ -1,7 +1,11 @@
-﻿using NBitcoin.DataEncoders;
+﻿using NBitcoin.Altcoins.HashX11;
+using NBitcoin.Crypto;
+using NBitcoin.DataEncoders;
 using Newtonsoft.Json.Linq;
 using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 
 namespace NBitcoin.Altcoins
 {
@@ -25,9 +29,14 @@ namespace NBitcoin.Altcoins
 
 			public static StratisConsensusFactory Instance { get; } = new StratisConsensusFactory();
 
+			public override BlockHeader CreateBlockHeader()
+			{
+				return new StratisBlockHeader();
+			}
+
 			public override Block CreateBlock()
 			{
-				return new StratisBlock(new BlockHeader());
+				return new StratisBlock(this.CreateBlockHeader());
 			}
 
 			public override Transaction CreateTransaction()
@@ -116,35 +125,88 @@ namespace NBitcoin.Altcoins
 			}
 		}
 
+		/// <summary>
+		/// A POS block header, this will create a work hash based on the X13 hash algos.
+		/// </summary>
+		public class StratisBlockHeader : BlockHeader
+		{
+			const int CurrentVersion = 7;
+
+			public StratisBlockHeader() : base()
+			{
+				this.nVersion = CurrentVersion;
+			}
+
+			public override uint256 GetHash()
+			{
+				uint256 hash = null;
+				uint256[] innerHashes = this._Hashes;
+
+				if (innerHashes != null)
+					hash = innerHashes[0];
+
+				if (hash != null)
+					return hash;
+
+				if (this.nVersion > 6)
+					hash = Hashes.Hash256(this.ToBytes());
+				else
+					hash = this.GetPoWHash();
+
+				innerHashes = this._Hashes;
+				if (innerHashes != null)
+				{
+					innerHashes[0] = hash;
+				}
+
+				return hash;
+			}
+			public override uint256 GetPoWHash()
+			{
+				return HashX13.Instance.Hash(this.ToBytes());
+			}
+		}
+
+		/// <summary>
+		/// A POS block that contains the additional block signature serialization.
+		/// </summary>
 		public class StratisBlock : Block
 		{
-			public StratisBlock(BlockHeader header) : base(header)
-			{
+			/// <summary>
+			/// A block signature - signed by one of the coin base txout[N]'s owner.
+			/// </summary>
+			private StratisBlockSignature blockSignature = new StratisBlockSignature();
 
+			public StratisBlock(BlockHeader blockHeader) : base(blockHeader)
+			{
 			}
+
 			public override ConsensusFactory GetConsensusFactory()
 			{
 				return StratisConsensusFactory.Instance;
 			}
 
-			public override void ReadWrite(BitcoinStream stream)
-			{
-				base.ReadWrite(stream);
-				stream.ReadWrite(ref this.blockSignature);
-			}
-
-			public static bool BlockSignature = false;
-
-			// block signature - signed by one of the coin base txout[N]'s owner
-			private StratisBlockSignature blockSignature = new StratisBlockSignature();
-
-			public StratisBlockSignature BlockSignatur
+			/// <summary>
+			/// The block signature type.
+			/// </summary>
+			public StratisBlockSignature BlockSignature
 			{
 				get { return this.blockSignature; }
 				set { this.blockSignature = value; }
 			}
-		}
 
+			/// <summary>
+			/// The additional serialization of the block POS block.
+			/// </summary>
+			public override void ReadWrite(BitcoinStream stream)
+			{
+				base.ReadWrite(stream);
+				stream.ReadWrite(ref this.blockSignature);
+
+				//this.BlockSize = stream.Serializing ? stream.Counter.WrittenBytes : stream.Counter.ReadBytes;
+			}
+		}
+		
 		private class StratisWitness
 		{
 			private TxInList _Inputs;

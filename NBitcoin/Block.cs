@@ -236,7 +236,7 @@ namespace NBitcoin
 			return GetHash();
 		}
 
-		public uint256 GetHash()
+		public virtual uint256 GetHash()
 		{
 			uint256 h = null;
 			var hashes = _Hashes;
@@ -285,7 +285,7 @@ namespace NBitcoin
 		}
 
 
-		uint256[] _Hashes;
+		protected uint256[] _Hashes;
 
 		public DateTimeOffset BlockTime
 		{
