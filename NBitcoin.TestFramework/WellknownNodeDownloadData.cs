@@ -55,6 +55,33 @@
 					Hash = "52469c56222c1b5344065ef2d3ce6fc58ae42939a7b80643a7e3ee75ec237da9"
 				}
 			};
+
+			public NodeDownloadData v0_17_0 = new NodeDownloadData()
+			{
+				Version = "0.17.0",
+				Linux = new NodeOSDownloadData()
+				{
+					Archive = "bitcoin-{0}-x86_64-linux-gnu.tar.gz",
+					DownloadLink = "https://bitcoincore.org/bin/bitcoin-core-{0}/bitcoin-{0}-x86_64-linux-gnu.tar.gz",
+					Executable = "bitcoin-{0}/bin/bitcoind",
+					Hash = "9d6b472dc2aceedb1a974b93a3003a81b7e0265963bd2aa0acdcb17598215a4f"
+				},
+				Mac = new NodeOSDownloadData()
+				{
+					Archive = "bitcoin-{0}-osx64.tar.gz",
+					DownloadLink = "https://bitcoincore.org/bin/bitcoin-core-{0}/bitcoin-{0}-osx64.tar.gz",
+					Executable = "bitcoin-{0}/bin/bitcoind",
+					Hash = "e4210edfff313e4e00169e9170369537bb45024c318f5b339623d5fd08715d61"
+				},
+				Windows = new NodeOSDownloadData()
+				{
+					Executable = "bitcoin-{0}/bin/bitcoind.exe",
+					DownloadLink = "https://bitcoincore.org/bin/bitcoin-core-{0}/bitcoin-{0}-win64.zip",
+					Archive = "bitcoin-{0}-win64.zip",
+					Hash = "d6312ef594fa701d6bc863415baeccd3a140f200259fcfac56dde81a73d50799"
+				},
+				UseSectionInConfigFile = true
+			};
 		}
 
 		public class LitecoinNodeDownloadData
@@ -109,33 +136,59 @@
 					Hash = "2bb565a77779be4ed5b186c93891bc0a12352c94316a1fc44388898f7afb7bc2"
 				}
 			};
+
+			public NodeDownloadData v0_16_3 = new NodeDownloadData()
+			{
+				Version = "0.16.3",
+				Windows = new NodeOSDownloadData()
+				{
+					DownloadLink = "https://download.litecoin.org/litecoin-{0}/win/litecoin-{0}-win64.zip",
+					Archive = "litecoin-{0}-win64.zip",
+					Executable = "litecoin-{0}/bin/litecoind.exe",
+					Hash = "1958608b52056d0489451cdba4f631b3010419ea85edc9271a9efe4341870b4d"
+				},
+				Linux = new NodeOSDownloadData()
+				{
+					DownloadLink = "https://download.litecoin.org/litecoin-{0}/linux/litecoin-{0}-x86_64-linux-gnu.tar.gz",
+					Archive = "litecoin-{0}-x86_64-linux-gnu.tar.gz",
+					Executable = "litecoin-{0}/bin/litecoind",
+					Hash = "686d99d1746528648c2c54a1363d046436fd172beadaceea80bdc93043805994"
+				},
+				Mac = new NodeOSDownloadData()
+				{
+					DownloadLink = "https://download.litecoin.org/litecoin-{0}/osx/litecoin-{0}-osx64.tar.gz",
+					Archive = "litecoin-{0}-osx64.tar.gz",
+					Executable = "litecoin-{0}/bin/litecoind",
+					Hash = "fe1a593ffb10fec817157903a49d8965c49594dda4021fb76cf7d341e5300e17"
+				}
+			};
 		}
 
 		public class ViacoinNodeDownloadData
 		{
-			public NodeDownloadData v0_15_1 = new NodeDownloadData()
+			public NodeDownloadData v0_15_2 = new NodeDownloadData()
 			{
-				Version = "0.15.1",
+				Version = "0.15.2",
 				Windows = new NodeOSDownloadData()
 				{
 					DownloadLink = "https://github.com/viacoin/viacoin/releases/download/v{0}/viacoin-{0}-win64.zip",
 					Archive = "viacoin-{0}-win64.zip",
 					Executable = "viacoin-{0}/bin/viacoind.exe",
-					Hash = "408d270db88e345fb5d4e93b5ec0f7761c676e4d795458ebaffce6de6cde65af"
+					Hash = "79e1d052890dae7531b782046ee4af4851778099121442b219d0605bee486789"
 				},
 				Linux = new NodeOSDownloadData()
 				{
 					DownloadLink = "https://github.com/viacoin/viacoin/releases/download/v{0}/viacoin-{0}-x86_64-linux-gnu.tar.gz",
 					Archive = "viacoin-{0}-linux64.tar.gz",
 					Executable = "viacoin-{0}/bin/viacoind",
-					Hash = "673bfd17194ca4fe8408450e1871447d461ce26925e71ea55eebd89c379f5775"
+					Hash = "bdbd432645a8b4baadddb7169ea4bef3d03f80dc2ce53dce5783d8582ac63bab"
 				},
 				Mac = new NodeOSDownloadData()
 				{
 					DownloadLink = "https://github.com/viacoin/viacoin/releases/download/v{0}/viacoin-{0}-osx64.tar.gz",
 					Archive = "viacoin-{0}-osx64.tar.gz",
 					Executable = "viacoin-{0}/bin/viacoind",
-					Hash = "995ad91744f037d4476737acdaf4d3eadbc6f02fba3404df0bb8fed20de52cfc"
+					Hash = "b2b0ac9cfb354a017df4271a312f604a67d9e7bc4450f796a20cebd15425c052"
 				}
 			};
 		}
@@ -488,6 +541,35 @@
 					CreateFolder = "GRS-{0}"
 				}
 			};
+
+			public NodeDownloadData v2_16_3 = new NodeDownloadData()
+			{
+				Version = "2.16.3",
+				Windows = new NodeOSDownloadData()
+				{
+					DownloadLink = "https://github.com/Groestlcoin/groestlcoin/releases/download/v{0}/groestlcoin-{0}-x86_64-w64-mingw32.zip",
+					Archive = "groestlcoin-{0}-x86_64-w64-mingw32.zip",
+					Executable = "GRS-{0}\\groestlcoind.exe",
+					Hash = "9617e7ec61a1f8850d11613ff3d4f4e1d8caa29e118ec1c29e07ef323b16557d",
+					CreateFolder = "GRS-{0}"
+				},
+				Linux = new NodeOSDownloadData()
+				{
+					DownloadLink = "https://github.com/Groestlcoin/groestlcoin/releases/download/v{0}/groestlcoin-{0}-x86_64-linux-gnu.tar.gz",
+					Archive = "groestlcoin-{0}-x86_64-linux-gnu.tar.gz",
+					Executable = "GRS-{0}/groestlcoind",
+					Hash = "f15bd5e38b25a103821f1563cd0e1b2cf7146ec9f9835493a30bd57313d3b86f",
+					CreateFolder = "GRS-{0}"
+				},
+				Mac = new NodeOSDownloadData()
+				{
+					DownloadLink = "https://github.com/Groestlcoin/groestlcoin/releases/download/v{0}/groestlcoin-{0}-x86_64-apple-darwin11.tar.gz",
+					Archive = "groestlcoin-{0}-x86_64-apple-darwin11.tar.gz",
+					Executable = "GRS-{0}/groestlcoind",
+					Hash = "4976c8f60105a32bb0d8e230577f60438d5bed45a9aa92c51f0dd79a13c6b89e",
+					CreateFolder = "GRS-{0}"
+				}
+			};
 		}
 
 		public class ZclassicNodeDownloadData
@@ -549,7 +631,22 @@
 					Archive = "stratis-{0}-osx64.zip",
 					Executable = "stratis-{0}-osx64/Stratis.StratisD.exe",
 					Hash = "ffff"
-				},
+				}
+			};
+		}
+
+		public class ElementsNodeDownloadData
+		{
+			public NodeDownloadData v0_14_1 = new NodeDownloadData()
+			{
+				Version = "0.14.1",
+				Windows = new NodeOSDownloadData()
+				{
+					DownloadLink = "https://aois.blob.core.windows.net/public/ElementsBinaries/elements-{0}-win64.zip",
+					Archive = "elements-{0}-win64.zip",
+					Executable = "elements-{0}/bin/elementsd.exe",
+					Hash = "d0d2e2a26d1fb64979e3050aa6b0e5e619d80f0f40552b39c62d07fdb889df90"
+				}
 			};
 		}
 
@@ -631,5 +728,11 @@
 		{
 			get; set;
 		} = new ZclassicNodeDownloadData();
+
+		public static ElementsNodeDownloadData Elements
+		{
+			get; set;
+		} = new ElementsNodeDownloadData();
+		public bool UseSectionInConfigFile { get; private set; }
 	}
 }

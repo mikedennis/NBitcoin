@@ -11,7 +11,7 @@ namespace NBitcoin.Tests
 			ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
 
 
-			//var builder = NodeBuilder.Create(NodeDownloadData.Litecoin.v0_15_1, Altcoins.Litecoin.Instance.Regtest, caller);
+			//var builder = NodeBuilder.Create(NodeDownloadData.Litecoin.v0_16_3, Altcoins.Litecoin.Instance.Regtest, caller);
 
 			//var builder = NodeBuilder.Create(NodeDownloadData.Viacoin.v0_15_1, Altcoins.Viacoin.Instance.Regtest, caller);
 
@@ -35,15 +35,18 @@ namespace NBitcoin.Tests
 
 			//var builder = NodeBuilder.Create(NodeDownloadData.Ufo.v0_16_0, Altcoins.AltNetworkSets.Ufo.Regtest, caller);
 
-			//var builder = NodeBuilder.Create(NodeDownloadData.Groestlcoin.v2_16_0, Altcoins.AltNetworkSets.Groestlcoin.Regtest, caller);
+			//var builder = NodeBuilder.Create(NodeDownloadData.Groestlcoin.v2_16_3, Altcoins.AltNetworkSets.Groestlcoin.Regtest, caller);
 
 			//var builder = NodeBuilder.Create(NodeDownloadData.Mogwai.v0_12_2, Altcoins.AltNetworkSets.Mogwai.Regtest, caller);
-			
+
 			//var builder = NodeBuilder.Create(NodeDownloadData.Dystem.v1_0_9_9, Altcoins.Dystem.Instance.Regtest, caller);
-			
-			//var builder = NodeBuilder.Create(NodeDownloadData.Bitcoin.v0_16_3, Altcoins.AltNetworkSets.Bitcoin.Regtest, caller);
-			var builder = NodeBuilder.Create(NodeDownloadData.Stratis.v1_2_0, Altcoins.Stratis.Instance.Regtest, caller);
+
+			//var builder = NodeBuilder.Create(NodeDownloadData.Elements.v0_14_1, Altcoins.AltNetworkSets.Bitcoin.Regtest, caller);
+
+			var builder = NodeBuilder.Create(NodeDownloadData.Stratis.v1_2_0, Altcoins.AltNetworkSets.Stratis.Regtest, caller);
 			builder.SupportCookieFile = false;
+
+			//var builder = NodeBuilder.Create(NodeDownloadData.Bitcoin.v0_17_0, Altcoins.AltNetworkSets.Bitcoin.Regtest, caller);
 
 			//var builder = NodeBuilder.Create(NodeDownloadData.Bitcore.v0_15_1, Altcoins.Bitcore.Instance.Regtest, caller);
 			

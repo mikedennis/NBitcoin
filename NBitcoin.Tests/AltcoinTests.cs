@@ -18,7 +18,7 @@ namespace NBitcoin.Tests
 		public void NoCrashQuickTest()
 		{
 			HashSet<string> coins = new HashSet<string>();
-			foreach(var network in NBitcoin.Altcoins.AltNetworkSets.GetAll().ToList())
+			foreach (var network in NBitcoin.Altcoins.AltNetworkSets.GetAll().ToList())
 			{
 				Assert.True(coins.Add(network.CryptoCode.ToLowerInvariant()));
 				Assert.NotEqual(network.Mainnet, network.Regtest);
@@ -40,7 +40,7 @@ namespace NBitcoin.Tests
 		[Fact]
 		public void CanCalculateTransactionHash()
 		{
-			using(var builder = NodeBuilderEx.Create())
+			using (var builder = NodeBuilderEx.Create())
 			{
 				var node = builder.CreateNode();
 				var rpc = node.CreateRPCClient();
@@ -56,7 +56,7 @@ namespace NBitcoin.Tests
 		[Fact]
 		public void HasCorrectGenesisBlock()
 		{
-			using(var builder = NodeBuilderEx.Create())
+			using (var builder = NodeBuilderEx.Create())
 			{
 				var rpc = builder.CreateNode().CreateRPCClient();
 				builder.StartAll();	
@@ -70,7 +70,7 @@ namespace NBitcoin.Tests
 		[Fact]
 		public void CanParseBlock()
 		{
-			using(var builder = NodeBuilderEx.Create())
+			using (var builder = NodeBuilderEx.Create())
 			{
 				var node = builder.CreateNode();
 				this.EnsureWallet(node);
@@ -89,7 +89,7 @@ namespace NBitcoin.Tests
 		[Fact]
 		public void CanSignTransactions()
 		{
-			using(var builder = NodeBuilderEx.Create())
+			using (var builder = NodeBuilderEx.Create())
 			{
 				var node = builder.CreateNode();
 				this.EnsureWallet(node);
@@ -122,7 +122,7 @@ namespace NBitcoin.Tests
 		[Fact]
 		public void CanParseAddress()
 		{
-			using(var builder = NodeBuilderEx.Create())
+			using (var builder = NodeBuilderEx.Create())
 			{
 				var node = builder.CreateNode();
 				this.EnsureWallet(node);
@@ -144,10 +144,72 @@ namespace NBitcoin.Tests
 			}
 		}
 
+		/// <summary>
+		/// This test check if we can scan RPC capabilities
+		/// </summary>
+		[Fact]
+		public void DoesRPCCapabilitiesWellAdvertised()
+		{
+			using (var builder = NodeBuilderEx.Create())
+			{
+				var node = builder.CreateNode();
+				builder.StartAll();
+				node.Generate(builder.Network.Consensus.CoinbaseMaturity + 1);
+				var rpc = node.CreateRPCClient();
+				rpc.ScanRPCCapabilities();
+				Assert.NotNull(rpc.Capabilities);
+
+				CheckCapabilities(rpc, "getnetworkinfo", rpc.Capabilities.SupportGetNetworkInfo);
+				CheckCapabilities(rpc, "scantxoutset", rpc.Capabilities.SupportScanUTXOSet);
+				CheckCapabilities(rpc, "signrawtransactionwithkey", rpc.Capabilities.SupportSignRawTransactionWith);
+				CheckCapabilities(rpc, "estimatesmartfee", rpc.Capabilities.SupportEstimateSmartFee);
+
+				try
+				{
+					var address = rpc.GetNewAddress(new GetNewAddressRequest()
+					{
+						AddressType = AddressType.Bech32
+					});
+					// If this fail, rpc support segwit bug you said it does not
+					Assert.Equal(rpc.Capabilities.SupportSegwit, address.ScriptPubKey.IsWitness);
+					if(rpc.Capabilities.SupportSegwit)
+					{
+						rpc.SendToAddress(address, Money.Coins(1.0m));
+					}
+				}
+				catch (RPCException) when (!rpc.Capabilities.SupportSegwit)
+				{
+				}
+			}
+		}
+		private void CheckCapabilities(Action command, bool supported)
+		{
+			if (!supported)
+			{
+				var ex = Assert.Throws<RPCException>(command);
+				Assert.True(ex.RPCCode == RPCErrorCode.RPC_METHOD_NOT_FOUND || ex.RPCCode == RPCErrorCode.RPC_METHOD_DEPRECATED);
+			}
+			else
+			{
+				try
+				{
+					command();
+				}
+				catch (RPCException ex) when (ex.RPCCode != RPCErrorCode.RPC_METHOD_NOT_FOUND && ex.RPCCode != RPCErrorCode.RPC_METHOD_DEPRECATED)
+				{
+					// Method exists
+				}
+			}
+		}
+		private void CheckCapabilities(RPCClient rpc, string command, bool supported)
+		{
+			CheckCapabilities(() => rpc.SendCommand(command, "random"), supported);
+		}
+
 		[Fact]
 		public void CanSyncWithPoW()
 		{
-			using(var builder = NodeBuilderEx.Create())
+			using (var builder = NodeBuilderEx.Create())
 			{
 				var node = builder.CreateNode();
 				this.EnsureWallet(node);
@@ -165,7 +227,7 @@ namespace NBitcoin.Tests
 		[Fact]
 		public void CorrectCoinMaturity()
 		{
-			using(var builder = NodeBuilderEx.Create())
+			using (var builder = NodeBuilderEx.Create())
 			{
 				var node = builder.CreateNode();
 				this.EnsureWallet(node);
@@ -181,7 +243,7 @@ namespace NBitcoin.Tests
 		[Fact]
 		public void CanSyncWithoutPoW()
 		{
-			using(var builder = NodeBuilderEx.Create())
+			using (var builder = NodeBuilderEx.Create())
 			{
 				var node = builder.CreateNode();
 				this.EnsureWallet(node);
