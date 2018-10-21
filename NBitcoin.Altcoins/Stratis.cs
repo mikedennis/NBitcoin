@@ -1,10 +1,12 @@
 ﻿using NBitcoin.Altcoins.HashX11;
 using NBitcoin.Crypto;
 using NBitcoin.DataEncoders;
+using NBitcoin.Protocol;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Threading;
 
 namespace NBitcoin.Altcoins
@@ -36,12 +38,81 @@ namespace NBitcoin.Altcoins
 
 			public override Block CreateBlock()
 			{
-				return new StratisBlock(this.CreateBlockHeader());
+				return new StratisBlock(new StratisBlockHeader());
 			}
 
 			public override Transaction CreateTransaction()
 			{
 				return new StratisTransaction(this);
+			}
+
+			protected bool IsHeadersPayload(Type type)
+			{
+				var baseType = typeof(HeadersPayload);
+				return baseType.IsAssignableFrom(type.GetTypeInfo());
+			}
+
+			public override bool TryCreateNew(Type type, out IBitcoinSerializable result)
+			{
+				result = null;
+				if (IsHeadersPayload(type))
+				{
+					result = CreateHeadersPayload();
+					return true;
+				}
+
+				return base.TryCreateNew(type, out result);
+			}
+
+			public HeadersPayload CreateHeadersPayload()
+			{
+				return new StratisHeadersPayload();
+			}
+		}
+
+		[Payload("headers")]
+		public class StratisHeadersPayload : HeadersPayload
+		{
+			class BlockHeaderWithTxCount : IBitcoinSerializable
+			{
+				public BlockHeaderWithTxCount()
+				{
+
+				}
+				public BlockHeaderWithTxCount(BlockHeader header)
+				{
+					_Header = header;
+				}
+				internal BlockHeader _Header;
+				#region IBitcoinSerializable Members
+
+				public void ReadWrite(BitcoinStream stream)
+				{
+					stream.ReadWrite(ref _Header);
+					VarInt txCount = new VarInt(0);
+					stream.ReadWrite(ref txCount);
+
+					// Stratis specific addition - unknown usage see Stratis source.
+					stream.ReadWrite(ref txCount);
+				}
+
+				#endregion
+			}
+
+			public override void ReadWriteCore(BitcoinStream stream)
+			{
+				if (stream.Serializing)
+				{
+					var heardersOff = Headers.Select(h => new BlockHeaderWithTxCount(h)).ToList();
+					stream.ReadWrite(ref heardersOff);
+				}
+				else
+				{
+					Headers.Clear();
+					List<BlockHeaderWithTxCount> headersOff = new List<BlockHeaderWithTxCount>();
+					stream.ReadWrite(ref headersOff);
+					Headers.AddRange(headersOff.Select(h => h._Header));
+				}
 			}
 		}
 
@@ -134,7 +205,16 @@ namespace NBitcoin.Altcoins
 
 			public StratisBlockHeader() : base()
 			{
-				this.nVersion = CurrentVersion;
+			}
+
+			public override void SetNull()
+			{
+				nVersion = CurrentVersion;
+				hashPrevBlock = 0;
+				hashMerkleRoot = 0;
+				nTime = 0;
+				nBits = 0;
+				nNonce = 0;
 			}
 
 			public override uint256 GetHash()
@@ -177,7 +257,7 @@ namespace NBitcoin.Altcoins
 			/// </summary>
 			private StratisBlockSignature blockSignature = new StratisBlockSignature();
 
-			public StratisBlock(BlockHeader blockHeader) : base(blockHeader)
+			public StratisBlock(StratisBlockHeader blockHeader) : base(blockHeader)
 			{
 			}
 
@@ -460,6 +540,7 @@ namespace NBitcoin.Altcoins
 				RuleChangeActivationThreshold = 1916,
 				MinerConfirmationWindow = 2016,
 				CoinType = 105,
+				CoinbaseMaturity = 50,
 				ConsensusFactory = StratisConsensusFactory.Instance
 			})
 			.SetBase58Bytes(Base58Type.PUBKEY_ADDRESS, new byte[] { 63 })
@@ -510,8 +591,9 @@ namespace NBitcoin.Altcoins
 				PowNoRetargeting = false,
 				RuleChangeActivationThreshold = 1916,
 				MinerConfirmationWindow = 2016,
-				CoinType = 105,				
-				ConsensusFactory = StratisConsensusFactory.Instance
+				CoinType = 105,
+				CoinbaseMaturity = 10,
+				ConsensusFactory = StratisConsensusFactory.Instance						
 			})
 			.SetBase58Bytes(Base58Type.PUBKEY_ADDRESS, new byte[] { 65 })
 			.SetBase58Bytes(Base58Type.SCRIPT_ADDRESS, new byte[] { 196 })
@@ -560,6 +642,7 @@ namespace NBitcoin.Altcoins
 				RuleChangeActivationThreshold = 1916,
 				MinerConfirmationWindow = 2016,
 				CoinType = 105,
+				CoinbaseMaturity = 10,
 				ConsensusFactory = StratisConsensusFactory.Instance
 			})
 			.SetBase58Bytes(Base58Type.PUBKEY_ADDRESS, new byte[] { 65 })

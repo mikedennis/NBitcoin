@@ -534,7 +534,7 @@
 					DownloadLink = "https://github.com/mikedennis/StratisBitcoinFullNode/releases/download/{0}/stratis-{0}-win64.zip",
 					Archive = "stratis-{0}-win64.zip",
 					Executable = "stratis-{0}-win64/Stratis.StratisD.exe",
-					Hash = "51627bb8f11ee73943626827d1d0029d108f225ad19f45ef0f54e322da861134"
+					Hash = "b3c2c28dfee92e1cc2e98f83f02ef1d45d87b603ad7c18e4540ab6c0bc40f337"
 				},
 				Linux = new NodeOSDownloadData()
 				{

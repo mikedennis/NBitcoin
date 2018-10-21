@@ -197,7 +197,7 @@ namespace NBitcoin
 			}
 		}
 
-		internal void SetNull()
+		public virtual void SetNull()
 		{
 			nVersion = CURRENT_VERSION;
 			hashPrevBlock = 0;
