@@ -207,7 +207,7 @@ namespace NBitcoin.Altcoins
 			{
 			}
 
-			public override void SetNull()
+			protected internal override void SetNull()
 			{
 				nVersion = CurrentVersion;
 				hashPrevBlock = 0;
