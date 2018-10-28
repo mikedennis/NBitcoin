@@ -1,4 +1,6 @@
-﻿using NBitcoin.RPC;
+﻿using NBitcoin.Altcoins.Elements;
+using NBitcoin.DataEncoders;
+using NBitcoin.RPC;
 using Newtonsoft.Json.Linq;
 using System;
 using System.IO;
@@ -48,8 +50,18 @@ namespace NBitcoin.Tests
 				builder.StartAll();
 				var blockHash = rpc.Generate(1)[0];
 				var block = rpc.GetBlock(blockHash);
-				var walletTx = rpc.SendCommand(RPCOperations.gettransaction, block.Transactions[0].GetHash());
-				walletTx.ThrowIfError();
+
+				Transaction walletTx = null;
+				try
+				{
+					walletTx = rpc.GetRawTransaction(block.Transactions[0].GetHash(), block.GetHash());
+				}
+				// Some nodes does not support the blockid
+				catch
+				{
+					walletTx = rpc.GetRawTransaction(block.Transactions[0].GetHash());
+				}
+				Assert.Equal(walletTx.ToHex(), block.Transactions[0].ToHex());
 			}
 		}
 
@@ -106,8 +118,7 @@ namespace NBitcoin.Tests
 
 				// Check the hash calculated correctly
 				Assert.Equal(txid, tx.GetHash());
-				TransactionBuilder txbuilder = new TransactionBuilder();
-				txbuilder.SetConsensusFactory(builder.Network);
+				TransactionBuilder txbuilder = builder.Network.CreateTransactionBuilder();
 				txbuilder.AddCoins(coin);
 				txbuilder.AddKeys(alice);
 				txbuilder.Send(new Key().ScriptPubKey, Money.Coins(0.4m));

@@ -1,4 +1,7 @@
-﻿using System.Net;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net;
 using System.Runtime.CompilerServices;
 
 namespace NBitcoin.Tests
@@ -24,7 +27,13 @@ namespace NBitcoin.Tests
 
 			//var builder = NodeBuilder.Create(NodeDownloadData.BGold.v0_15_0, Altcoins.BGold.Instance.Regtest, caller);
 
-			//var builder = NodeBuilder.Create(NodeDownloadData.Polis.v1_3_0, Altcoins.Polis.Instance.Regtest, caller);
+			//var builder = NodeBuilder.Create(NodeDownloadData.Polis.v1_4_3, Altcoins.Polis.Instance.Regtest, caller);
+
+			//var builder = NodeBuilder.Create(NodeDownloadData.Monoeci.v0_12_2_3, Altcoins.Monoeci.Instance.Regtest, caller);
+
+			//var builder = NodeBuilder.Create(NodeDownloadData.Colossus.v1_1_1, Altcoins.Colossus.Instance.Regtest, caller);
+
+			//var builder = NodeBuilder.Create(NodeDownloadData.GoByte.v0_12_2_4, Altcoins.GoByte.Instance.Regtest, caller);
 
 			//var builder = NodeBuilder.Create(NodeDownloadData.Monacoin.v0_15_1, Altcoins.Monacoin.Regtest, caller);
 
@@ -41,14 +50,14 @@ namespace NBitcoin.Tests
 
 			//var builder = NodeBuilder.Create(NodeDownloadData.Dystem.v1_0_9_9, Altcoins.Dystem.Instance.Regtest, caller);
 
-			//var builder = NodeBuilder.Create(NodeDownloadData.Elements.v0_14_1, Altcoins.AltNetworkSets.Bitcoin.Regtest, caller);
+			//var builder = NodeBuilder.Create(NodeDownloadData.Elements.v0_14_1, Altcoins.Elements.ElementsNetworks.Regtest, caller);
 
 			var builder = NodeBuilder.Create(NodeDownloadData.Stratis.v1_2_0, Altcoins.AltNetworkSets.Stratis.Regtest, caller);
 			builder.SupportCookieFile = false;
 
 			//var builder = NodeBuilder.Create(NodeDownloadData.Bitcoin.v0_17_0, Altcoins.AltNetworkSets.Bitcoin.Regtest, caller);
 
-			//var builder = NodeBuilder.Create(NodeDownloadData.Bitcore.v0_15_1, Altcoins.Bitcore.Instance.Regtest, caller);
+			//var builder = NodeBuilder.Create(NodeDownloadData.Bitcore.v0_15_2, Altcoins.Bitcore.Instance.Regtest, caller);
 			
 			return builder;
 		}

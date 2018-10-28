@@ -468,7 +468,10 @@ namespace NBitcoin.RPC
 			return new RPCClient(CredentialString, Address, Network)
 			{
 				_BatchedRequests = new ConcurrentQueue<Tuple<RPCRequest, TaskCompletionSource<RPCResponse>>>(),
-				Capabilities = Capabilities
+				Capabilities = Capabilities,
+#if !NETSTANDARD1X
+				RequestTimeout = RequestTimeout
+#endif
 			};
 		}
 
@@ -945,9 +948,15 @@ namespace NBitcoin.RPC
 			webRequest.Headers[HttpRequestHeader.Authorization] = "Basic " + Encoders.Base64.EncodeData(Encoders.ASCII.DecodeData(_Authentication));
 			webRequest.ContentType = "application/json-rpc";
 			webRequest.Method = "POST";
+#if !NETSTANDARD1X
+			webRequest.KeepAlive = false;
+			webRequest.Timeout = (int)RequestTimeout.TotalMilliseconds;
+#endif
 			return webRequest;
 		}
-
+#if !NETSTANDARD1X
+		public TimeSpan RequestTimeout { get; set; } = TimeSpan.FromSeconds(100);
+#endif
 		private async Task<Stream> ToMemoryStreamAsync(Stream stream)
 		{
 			MemoryStream ms = new MemoryStream();
@@ -1218,34 +1227,21 @@ namespace NBitcoin.RPC
 
 		public BlockHeader GetBlockHeader(uint256 blockHash)
 		{
-			var resp = SendCommand("getblockheader", blockHash);
+			var resp = SendCommand("getblockheader", blockHash, false);
 			return ParseBlockHeader(resp);
 		}
 
 		public async Task<BlockHeader> GetBlockHeaderAsync(uint256 blockHash)
 		{
-			var resp = await SendCommandAsync("getblockheader", blockHash).ConfigureAwait(false);
+			var resp = await SendCommandAsync("getblockheader", blockHash, false).ConfigureAwait(false);
 			return ParseBlockHeader(resp);
 		}
 
 		private BlockHeader ParseBlockHeader(RPCResponse resp)
 		{
 			var header = Network.Consensus.ConsensusFactory.CreateBlockHeader();
-			header.Version = (int)resp.Result["version"];
-			header.Nonce = (uint)resp.Result["nonce"];
-			header.Bits = new Target(Encoders.Hex.DecodeData((string)resp.Result["bits"]));
-			if (resp.Result["previousblockhash"] != null)
-			{
-				header.HashPrevBlock = uint256.Parse((string)resp.Result["previousblockhash"]);
-			}
-			if (resp.Result["time"] != null)
-			{
-				header.BlockTime = Utils.UnixTimeToDateTime((uint)resp.Result["time"]);
-			}
-			if (resp.Result["merkleroot"] != null)
-			{
-				header.HashMerkleRoot = uint256.Parse((string)resp.Result["merkleroot"]);
-			}
+			var hex = Encoders.Hex.DecodeData(resp.Result.Value<string>());
+			header.ReadWrite(new BitcoinStream(hex));
 			return header;
 		}
 
@@ -1418,6 +1414,11 @@ namespace NBitcoin.RPC
 			return GetRawTransactionAsync(txid, null, throwIfNotFound);
 		}
 
+		public Transaction GetRawTransaction(uint256 txid, uint256 blockId, bool throwIfNotFound = true)
+		{
+			return GetRawTransactionAsync(txid, blockId, throwIfNotFound).GetAwaiter().GetResult();
+		}
+
 		public async Task<Transaction> GetRawTransactionAsync(uint256 txid, uint256 blockId, bool throwIfNotFound = true)
 		{
 			List<object> args = new List<object>(3);
@@ -1433,7 +1434,7 @@ namespace NBitcoin.RPC
 
 			response.ThrowIfError();
 			var tx = Network.Consensus.ConsensusFactory.CreateTransaction();
-			tx.ReadWrite(Encoders.Hex.DecodeData(response.Result.ToString()));
+			tx.ReadWrite(Encoders.Hex.DecodeData(response.Result.ToString()), Network);
 			return tx;
 		}
 
@@ -1445,7 +1446,7 @@ namespace NBitcoin.RPC
 		private Transaction ParseTxHex(string hex)
 		{
 			var tx = Network.Consensus.ConsensusFactory.CreateTransaction();
-			tx.ReadWrite(Encoders.Hex.DecodeData(hex));
+			tx.ReadWrite(Encoders.Hex.DecodeData(hex), Network);
 			return tx;
 		}
 
@@ -1646,6 +1647,52 @@ namespace NBitcoin.RPC
 		/// <summary>
 		/// Requires wallet support. Requires an unlocked wallet or an unencrypted wallet.
 		/// </summary>
+		/// <param name="scriptPubKey">The destination where coins should be sent</param>
+		/// <param name="amount">The amount to spend</param>
+		/// <param name="commentTx">A locally-stored (not broadcast) comment assigned to this transaction. Default is no comment</param>
+		/// <param name="commentDest">A locally-stored (not broadcast) comment assigned to this transaction. Meant to be used for describing who the payment was sent to. Default is no comment</param>
+		/// <param name="subtractFeeFromAmount">The fee will be deducted from the amount being sent. The recipient will receive less bitcoins than you enter in the amount field. </param>
+		/// <param name="replaceable">Allow this transaction to be replaced by a transaction with higher fees. </param>
+		/// <returns>The TXID of the sent transaction</returns>
+		public uint256 SendToAddress(
+			Script scriptPubKey,
+			Money amount,
+			string commentTx = null,
+			string commentDest = null,
+			bool subtractFeeFromAmount = false,
+			bool replaceable = false
+		)
+		{
+			return SendToAddressAsync(scriptPubKey, amount, commentTx, commentDest, subtractFeeFromAmount, replaceable).GetAwaiter().GetResult();
+		}
+
+		/// <summary>
+		/// Requires wallet support. Requires an unlocked wallet or an unencrypted wallet.
+		/// </summary>
+		/// <param name="scriptPubKey">The destination where coins should be sent</param>
+		/// <param name="amount">The amount to spend</param>
+		/// <param name="commentTx">A locally-stored (not broadcast) comment assigned to this transaction. Default is no comment</param>
+		/// <param name="commentDest">A locally-stored (not broadcast) comment assigned to this transaction. Meant to be used for describing who the payment was sent to. Default is no comment</param>
+		/// <param name="subtractFeeFromAmount">The fee will be deducted from the amount being sent. The recipient will receive less bitcoins than you enter in the amount field. </param>
+		/// <param name="replaceable">Allow this transaction to be replaced by a transaction with higher fees. </param>
+		/// <returns>The TXID of the sent transaction</returns>
+		public Task<uint256> SendToAddressAsync(
+			Script scriptPubKey,
+			Money amount,
+			string commentTx = null,
+			string commentDest = null,
+			bool subtractFeeFromAmount = false,
+			bool replaceable = false
+			)
+		{
+			if (scriptPubKey == null)
+				throw new ArgumentNullException(nameof(scriptPubKey));
+			return SendToAddressAsync(scriptPubKey.GetDestinationAddress(Network), amount, commentTx, commentDest, subtractFeeFromAmount, replaceable);
+		}
+
+		/// <summary>
+		/// Requires wallet support. Requires an unlocked wallet or an unencrypted wallet.
+		/// </summary>
 		/// <param name="address">A P2PKH or P2SH address to which the bitcoins should be sent</param>
 		/// <param name="amount">The amount to spend</param>
 		/// <param name="commentTx">A locally-stored (not broadcast) comment assigned to this transaction. Default is no comment</param>
@@ -1662,6 +1709,10 @@ namespace NBitcoin.RPC
 			bool replaceable = false
 			)
 		{
+			if (address == null)
+				throw new ArgumentNullException(nameof(address));
+			if (amount == null)
+				throw new ArgumentNullException(nameof(amount));
 			List<object> parameters = new List<object>();
 			parameters.Add(address.ToString());
 			parameters.Add(amount.ToString());

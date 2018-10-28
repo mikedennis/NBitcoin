@@ -127,6 +127,11 @@ namespace NBitcoin
 			var encoder = network.GetBech32Encoder(type, true);
 			return encoder.Encode(witnessVersion, bytes);
 		}
+
+		public Transaction CreateTransaction()
+		{
+			return Consensus.ConsensusFactory.CreateTransaction();
+		}
 	}
 
 	public enum BuriedDeployments : int
@@ -405,7 +410,7 @@ namespace NBitcoin
 			_HashGenesisBlock = new Lazy<uint256>(()=>
 			{
 				var block = ConsensusFactory.CreateBlock();
-				block.ReadWrite(genesis);
+				block.ReadWrite(genesis, ConsensusFactory);
 				return block.GetHash();
 			}, true);
 		}
@@ -997,19 +1002,12 @@ namespace NBitcoin
 		{
 			Transaction txNew = Consensus.ConsensusFactory.CreateTransaction();
 			txNew.Version = 1;
-			txNew.AddInput(new TxIn()
-			{
-				ScriptSig = new Script(Op.GetPushOp(486604799), new Op()
+			txNew.Inputs.Add(scriptSig: new Script(Op.GetPushOp(486604799), new Op()
 				{
 					Code = (OpcodeType)0x1,
 					PushData = new[] { (byte)4 }
-				}, Op.GetPushOp(Encoders.ASCII.DecodeData(pszTimestamp)))
-			});
-			txNew.AddOutput(new TxOut()
-			{
-				Value = genesisReward,
-				ScriptPubKey = genesisOutputScript
-			});
+				}, Op.GetPushOp(Encoders.ASCII.DecodeData(pszTimestamp))));
+			txNew.Outputs.Add(genesisReward, genesisOutputScript);
 			Block genesis = Consensus.ConsensusFactory.CreateBlock();
 			genesis.Header.BlockTime = Utils.UnixTimeToDateTime(nTime);
 			genesis.Header.Bits = nBits;
@@ -1219,6 +1217,15 @@ namespace NBitcoin
 			set;
 		} = new NetworkStringParser();
 
+		public TransactionBuilder CreateTransactionBuilder()
+		{
+			return consensus.ConsensusFactory.CreateTransactionBuilder();
+		}
+
+		public TransactionBuilder CreateTransactionBuilder(int seed)
+		{
+			return consensus.ConsensusFactory.CreateTransactionBuilder(seed);
+		}
 
 		public Base58CheckEncoder GetBase58CheckEncoder()
 		{
@@ -1328,7 +1335,7 @@ namespace NBitcoin
 		public Block GetGenesis()
 		{
 			var block = Consensus.ConsensusFactory.CreateBlock();
-			block.ReadWrite(_GenesisBytes);
+			block.ReadWrite(_GenesisBytes, Consensus.ConsensusFactory);
 			return block;
 		}
 
