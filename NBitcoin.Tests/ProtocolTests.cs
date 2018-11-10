@@ -1,6 +1,7 @@
 ﻿#if !NOSOCKET
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -13,7 +14,9 @@ using System.IO;
 using NBitcoin.DataEncoders;
 using System.Net.Sockets;
 using NBitcoin.Protocol.Behaviors;
-using System.Diagnostics;
+using NBitcoin.Logging;
+using NBitcoin.Tests.Helpers;
+using Xunit.Abstractions;
 using Xunit.Sdk;
 
 namespace NBitcoin.Tests
@@ -132,6 +135,7 @@ namespace NBitcoin.Tests
 	}
 	public class ProtocolTests
 	{
+
 		[Fact]
 		[Trait("UnitTest", "UnitTest")]
 		//Copied from https://en.bitcoin.it/wiki/Protocol_specification (19/04/2014)
@@ -191,7 +195,7 @@ namespace NBitcoin.Tests
 						Test = new Action<object>(o=>
 							{
 								var addr = (AddrPayload)o;
-								Assert.Equal(1, addr.Addresses.Length);
+								Assert.Single(addr.Addresses);
 								//"Mon Dec 20 21:50:10 EST 2010"
 								var date = TimeZoneInfo.ConvertTime(addr.Addresses[0].Time,EST);
 								Assert.Equal(20,date.Day);
@@ -356,7 +360,7 @@ namespace NBitcoin.Tests
 					var tree = merkle.Object.PartialMerkleTree;
 					Assert.True(tree.Check(block.Header.HashMerkleRoot));
 					Assert.True(tree.GetMatchedTransactions().Count() >= 10);
-					Assert.True(tree.GetMatchedTransactions().Contains(knownTx));
+					Assert.Contains(knownTx, tree.GetMatchedTransactions());
 
 					List<Transaction> matched = new List<Transaction>();
 					for(int i = 0; i < tree.GetMatchedTransactions().Count(); i++)
@@ -366,7 +370,7 @@ namespace NBitcoin.Tests
 					Assert.True(matched.Count >= 10);
 					tree = tree.Trim(knownTx);
 					Assert.True(tree.GetMatchedTransactions().Count() == 1);
-					Assert.True(tree.GetMatchedTransactions().Contains(knownTx));
+					Assert.Contains(knownTx, tree.GetMatchedTransactions());
 
 					Action act = () =>
 					{
@@ -798,7 +802,7 @@ namespace NBitcoin.Tests
 			using(var tester = new NodeServerTester())
 			{
 				tester.Server2.Nonce = tester.Server1.Nonce;
-				Assert.Throws(typeof(InvalidOperationException), () =>
+				Assert.Throws<InvalidOperationException>(() =>
 				{
 					tester.Node1.VersionHandshake();
 				});
@@ -835,7 +839,7 @@ namespace NBitcoin.Tests
 				n1.Behaviors.Clear();
 				Thread.Sleep(1200);
 				Assert.True(n2.State == NodeState.Disconnecting || n2.State == NodeState.Offline);
-				Assert.True(n2.DisconnectReason.Reason.StartsWith("Pong timeout", StringComparison.Ordinal));
+				Assert.StartsWith("Pong timeout", n2.DisconnectReason.Reason, StringComparison.Ordinal);
 			}
 		}
 

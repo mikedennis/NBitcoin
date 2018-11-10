@@ -50,15 +50,13 @@ namespace NBitcoin.Tests
 
 			//var builder = NodeBuilder.Create(NodeDownloadData.Dystem.v1_0_9_9, Altcoins.Dystem.Instance.Regtest, caller);
 
-			//var builder = NodeBuilder.Create(NodeDownloadData.Elements.v0_14_1, Altcoins.Elements.ElementsNetworks.Regtest, caller);
-
 			var builder = NodeBuilder.Create(NodeDownloadData.Stratis.v1_2_0, Altcoins.AltNetworkSets.Stratis.Regtest, caller);
 			builder.SupportCookieFile = false;
 
 			//var builder = NodeBuilder.Create(NodeDownloadData.Bitcoin.v0_17_0, Altcoins.AltNetworkSets.Bitcoin.Regtest, caller);
+			//var builder = NodeBuilder.Create(NodeDownloadData.Liquid.v3_14_1_21, Altcoins.AltNetworkSets.Liquid.Regtest, caller);
+			//var builder = NodeBuilder.Create(NodeDownloadData.Bitcore.v0_15_2, Altcoins.Bitcore.Instance.Regtest, caller);			
 
-			//var builder = NodeBuilder.Create(NodeDownloadData.Bitcore.v0_15_2, Altcoins.Bitcore.Instance.Regtest, caller);
-			
 			return builder;
 		}
 	}
