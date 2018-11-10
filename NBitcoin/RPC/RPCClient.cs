@@ -285,6 +285,17 @@ namespace NBitcoin.RPC
 		/// </summary>
 		public RPCCapabilities Capabilities { get; set; }
 
+		public async Task<RPCCapabilities> ScanRPCCapabilitiesNoBatch()
+		{
+			var capabilities = new RPCCapabilities();
+			await SetVersion(capabilities);
+			await CheckCapabilities(this, "scantxoutset", v => capabilities.SupportScanUTXOSet = v);
+			await CheckCapabilities(this, "signrawtransactionwithkey", v => capabilities.SupportSignRawTransactionWith = v);
+			await CheckCapabilities(this, "estimatesmartfee", v => capabilities.SupportEstimateSmartFee = v);
+			await CheckSegwitCapabilities(this, v => capabilities.SupportSegwit = v);			
+			Capabilities = capabilities;
+			return capabilities;
+		}
 		/// <summary>
 		/// Run several RPC function to scan the RPC capabilities, then set RPCClient.Capabilities
 		/// </summary>

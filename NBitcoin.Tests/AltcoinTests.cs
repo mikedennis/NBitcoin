@@ -203,6 +203,44 @@ namespace NBitcoin.Tests
 				}
 			}
 		}
+
+		[Fact]
+		public async void DoesRPCCapabilitiesWellAdvertisedNoBatchAsync()
+		{
+			using (var builder = NodeBuilderEx.Create())
+			{
+				var node = builder.CreateNode();
+				this.EnsureWallet(node);
+				builder.StartAll();
+				node.Generate(builder.Network.Consensus.CoinbaseMaturity + 1);
+				var rpc = node.CreateRPCClient();
+				await rpc.ScanRPCCapabilitiesNoBatch();
+
+				Assert.NotNull(rpc.Capabilities);
+
+				CheckCapabilities(rpc, "getnetworkinfo", rpc.Capabilities.SupportGetNetworkInfo);
+				CheckCapabilities(rpc, "scantxoutset", rpc.Capabilities.SupportScanUTXOSet);
+				CheckCapabilities(rpc, "signrawtransactionwithkey", rpc.Capabilities.SupportSignRawTransactionWith);
+				CheckCapabilities(rpc, "estimatesmartfee", rpc.Capabilities.SupportEstimateSmartFee);
+
+				try
+				{
+					var address = rpc.GetNewAddress(new GetNewAddressRequest()
+					{
+						AddressType = AddressType.Bech32
+					});
+					// If this fail, rpc support segwit bug you said it does not
+					Assert.Equal(rpc.Capabilities.SupportSegwit, address.ScriptPubKey.IsWitness);
+					if (rpc.Capabilities.SupportSegwit)
+					{
+						rpc.SendToAddress(address, Money.Coins(1.0m));
+					}
+				}
+				catch (RPCException) when (!rpc.Capabilities.SupportSegwit)
+				{
+				}
+			}
+		}
 		private void CheckCapabilities(Action command, bool supported)
 		{
 			if (!supported)
